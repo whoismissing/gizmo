@@ -1,0 +1,102 @@
+Scoreboard
+Requirements
+
+R1. Scoreboard should perform a service check (on each service concurrently) per time period
+R2. Scoreboard should retain data on number of missed checks per service and for total
+R3. Scoreboard should have a web interface for viewing whether a service is up or down over a period of time
+R4. Scoreboard should be able to support addition of services
+R5. Scoreboard should be able to support services for multiple teams
+R6. Scoreboard web interface should contain styling for images that will update
+
+Possible imports:
+https://github.com/mattn/go-sqlite3
+https://golang.org/pkg/database/sql/
+https://golang.org/pkg/net/http/
+https://golang.org/pkg/net/http/httptest/
+https://golang.org/pkg/html/template/
+https://golang.org/pkg/os/exec/
+
+https://www.sqlite.org/download.html
+https://sqlitebrowser.org/dl/
+
+Possible structures:
+
+Store these in sqlite3 database:
+
+Game {
+	List of teams
+	Beginning of Game time
+	Current Game time
+}
+
+Team {
+	Team ID
+	Team total of missed checks
+	Team total of hit checks
+	Team total of attempted checks
+	List of services
+}
+
+Service {
+	Name
+	Current status [ up / down ]
+	SystemCheckType [ www, ftp, ssh, dns ]
+	Host IP
+	Team ID
+	Number of missed checks
+	Number of hit checks
+	Total number of checks
+	List of statuses
+}
+
+Status {
+	Time
+	state
+}
+
+www {
+	site url
+}
+
+dns {
+	domain name
+}
+
+ftp {
+	// anonymous be setting username to anonymous and empty password
+	username
+	password
+}
+
+ssh {
+	username
+	password
+	command for check
+}
+
+ping {
+	host ip
+}
+
+Possible code flow:
+
+	Use TOML for configuration file
+
+	Initialization:
+		Install and set up the database
+		Load from database for teams and services and construct the structures
+		Set up goroutines for each service to be run concurrently per team
+		Loop on a ~5 minute timer for a service check
+		After each check, update the structure data in the database and update the information on the web page
+			The web page should auto refresh 
+
+Running on Windows vs Linux
+	if runtime.GOOS == "windows" {
+        fmt.Println("You are running on Windows")
+    } else {
+        fmt.Println("You are running on an OS other than Windows")
+    }
+		
+Future capabilities:
+
+F1. Permit addition of new teams / services via web interface, may require an admin user to login and make changes
