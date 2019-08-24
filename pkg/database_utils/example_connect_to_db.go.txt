@@ -1,0 +1,42 @@
+package databaseutils
+
+import (
+	"database/sql"
+	"fmt"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func main() {
+	db, err := sql.Open("sqlite3", "./gizmo_sqlite_db.db")
+	checkErr(err)
+
+	/*
+		statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, firstname TEXT, lastname TEXT)")
+		statement.Exec()
+	*/
+
+	// query
+	rows, err := db.Query("SELECT * FROM Game")
+	checkErr(err)
+	var gameStartTime int
+	var currentGameTime int
+	var gameID int
+
+	for rows.Next() {
+		err = rows.Scan(&gameStartTime, &currentGameTime, &gameID)
+		checkErr(err)
+		fmt.Println(gameStartTime)
+		fmt.Println(currentGameTime)
+		fmt.Println(gameID)
+	}
+
+	rows.Close()
+
+}
