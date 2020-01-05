@@ -91,7 +91,7 @@ Possible code flow:
 			The web page should auto refresh 
 
 Running on Windows vs Linux
-	if runtime.GOOS == "windows" {
+    if runtime.GOOS == "windows" {
         fmt.Println("You are running on Windows")
     } else {
         fmt.Println("You are running on an OS other than Windows")
