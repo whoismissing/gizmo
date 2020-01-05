@@ -1,4 +1,4 @@
-package database_utils
+package gizmodbutils
 
 import (
 	"database/sql"
@@ -9,7 +9,7 @@ import (
 func createGameTable(db *sql.DB) {
 	_, _ = db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Game" (
-		"GameStartTime"	INTEGER,
+		"GameStartTime"		INTEGER,
 		"CurrentGameTime"	INTEGER,
 		"GameID"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE
 	);
