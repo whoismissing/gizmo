@@ -1,0 +1,25 @@
+"teamid": 1 {
+	"services" {
+		"www" {
+			"url":"192.168.1.1",
+		},
+		"ftp" {
+			"username":"ccdc",
+			"password":"P@ssw0rd",	
+		},
+		"ssh" {
+			"username":"ccdc",
+			"password":"P@ssw0rd",
+			"command":"ls",
+		},
+		"dns" {
+			"domains" {
+				"ccdc.local",
+			}
+		},
+		"ping" {
+			"ip":"192.168.1.1",
+		}
+
+	}
+}

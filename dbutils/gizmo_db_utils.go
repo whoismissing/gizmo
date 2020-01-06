@@ -1,13 +1,14 @@
-package gizmodbutils
+package dbutils
 
 import (
 	"database/sql"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func createGameTable(db *sql.DB) {
-	_, _ = db.Exec(`
+	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Game" (
 		"GameStartTime"		INTEGER,
 		"CurrentGameTime"	INTEGER,
@@ -15,11 +16,15 @@ func createGameTable(db *sql.DB) {
 	);
 	`)
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return
 }
 
 func createTeamTable(db *sql.DB) {
-	_, _ = db.Exec(`
+	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Team" (
 		"GameID"	INTEGER,
 		"TeamID"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -28,11 +33,15 @@ func createTeamTable(db *sql.DB) {
 	);
 	`)
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return
 }
 
 func createServiceTable(db *sql.DB) {
-	_, _ = db.Exec(`
+	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Service" (
 		"Name"	TEXT NOT NULL UNIQUE,
 		"TeamID"	INTEGER,
@@ -46,11 +55,15 @@ func createServiceTable(db *sql.DB) {
 	);
 	`)
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return
 }
 
 func createStatusTable(db *sql.DB) {
-	_, _ = db.Exec(`
+	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Status" (
 		"ServiceID"	INTEGER,
 		"StatusID"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -58,6 +71,10 @@ func createStatusTable(db *sql.DB) {
 		"State"	TEXT
 	);
 	`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	return
 }
