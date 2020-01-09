@@ -1,69 +1,114 @@
 package structs
 
-// TODO: uppercase all struct value names
+import "time"
 
 type Game struct {
-	teams []Team
-	time uint
+	Teams []Team
+	StartTime time.Time
 }
 
 type Team struct {
-	teamID uint
-	totalChecksMissed uint
-	totalChecksHit uint
-	totalChecksAttempted uint
+	TeamID uint
+	TotalChecksMissed uint
+	TotalChecksHit uint
+	TotalChecksAttempted uint
 	Services []Service
 }
 
 type Service struct {
-	name string
-	status bool
-	hostIP string
-	teamID uint
-	checksMissed uint
-	checksHit uint
-	checksAttempted uint
-	prevStatuses []Status
+	Name string
+	Status bool
+	ServiceType ServiceType
+	HostIP string
+	TeamID uint
+	ChecksMissed uint
+	ChecksHit uint
+	ChecksAttempted uint
+	PrevStatuses []Status
 }
 
 type Status struct {
-	time uint
-	status bool
+	Time time.Time
+	Status bool
 }
 
-/*
 type ServiceType interface {
-	ChooseService() ServiceType
+	CheckHealth()
 }
 
 type WebService struct {
+	URL string
+}
+
+type DomainNameService struct {
+	DomainName string
+}
+
+type FileTransferService struct {
+	Username string
+	Password string
+}
+
+type SecureShellService struct {
+	Username string
+	Password string
+	Command string
+}
+
+type PingService struct {
 
 }
 
-func (s *WebService) ChooseService() WebService {
-	return s
-}
-*/
+func (www WebService) CheckHealth() {
 
-func NewGame(initTime uint) Game {
-	game := Game{teams: nil, time: initTime}
+}
+
+func (dns DomainNameService) CheckHealth() {
+
+}
+
+func (ftp FileTransferService) CheckHealth() {
+
+}
+
+func (ssh SecureShellService) CheckHealth() {
+
+}
+
+func (ping PingService) CheckHealth() {
+
+}
+
+func NewGame(teams []Team) Game {
+	game := Game{Teams: teams, StartTime: time.Now()}
 	return game
 }
 
-/*
 func NewTeam(newTeamID uint) Team {
-	team := Team{teamID: newTeamID, totalChecksMissed: 0, totalChecksHit: 0, totalChecksAttempted: 0, services: nil}
+	team := Team{TeamID: newTeamID, TotalChecksMissed: 0, TotalChecksHit: 0, TotalChecksAttempted: 0, Services: nil}
 	return team
 }
-*/
+
+func NewTeams(numTeams uint) []Team {
+	teams := make([]Team, numTeams)
+	return teams
+}
 
 func NewService(serviceName string, newTeamID uint) Service {
-	service := Service{name: serviceName, status: false, hostIP: "", teamID: newTeamID, checksMissed: 0, checksHit: 0, checksAttempted: 0, prevStatuses: nil}
+	service := Service{Name: serviceName, Status: false, HostIP: "", TeamID: newTeamID, ChecksMissed: 0, ChecksHit: 0, ChecksAttempted: 0, PrevStatuses: nil}
 	return service
 }
 
-func NewStatus(initTime uint, initStatus bool) Status {
-	status := Status{time: initTime, status: initStatus}
+func NewServices(numServices uint, teamID uint) []Service {
+	services := make([]Service, numServices)
+	for i:= uint(0); i < numServices; i++ {
+		services[i].TeamID = teamID
+	}
+	return services
+}
+
+func NewStatus(initStatus bool) Status {
+	status := Status{Time: time.Now(), Status: initStatus}
 	return status
 }
 

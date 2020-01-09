@@ -7,18 +7,30 @@ import (
 	//_ "github.com/mattn/go-sqlite3"
 	structs "github.com/whoismissing/gizmo/structs"
 	"fmt"
+	"reflect"
 )
 
 func main() {
 	//db, _ := sql.Open("sqlite3", "./gizmo.db")
 	//db_utils.InitializeDatabase(db)
 
-	game := structs.NewGame(22) // {teams: nil, time: 1}
+	game := structs.NewGame(nil) // {teams: nil, time: 1}
 	fmt.Printf("game = %+v\n", game)
 
-	teams := make([]structs.Team, 5)
+	teams := structs.NewTeams(5)
 	teams[0].Services = make([]structs.Service, 5)
-	fmt.Printf("teams = %+v\n", teams[0])
+	teams[1].Services = make([]structs.Service, 3)
+	fmt.Printf("teams = %+v\n", teams)
+
+	www := structs.WebService{URL: "google.com"}
+	fmt.Printf("www = %+v\n", www)
+
+	fmt.Println("type ", reflect.TypeOf(www))
+
+	service := structs.NewService("www", 69)
+	service.ServiceType = www
+	fmt.Printf("service = %+v\n", service)
+	fmt.Println("type ", reflect.TypeOf(www))
 
 	/*
 	team1 := structs.NewTeam(69)
