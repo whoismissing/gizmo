@@ -1,6 +1,9 @@
 package structs
 
-import "time"
+import (
+	"time"
+	"encoding/json"
+)
 
 type Game struct {
 	Teams []Team
@@ -18,6 +21,7 @@ type Team struct {
 type Service struct {
 	Name string
 	Status bool
+	ObjectLoad TypedJson
 	ServiceType ServiceType
 	HostIP string
 	TeamID uint
@@ -30,6 +34,11 @@ type Service struct {
 type Status struct {
 	Time time.Time
 	Status bool
+}
+
+type TypedJson struct {
+	Type string
+	Data json.RawMessage
 }
 
 type ServiceType interface {

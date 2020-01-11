@@ -2,6 +2,7 @@ package structs
 
 import (
 	"testing"
+	"encoding/json"
 )
 
 func TestInitializeStructs(t *testing.T) {
@@ -22,4 +23,29 @@ func TestInitializeStructs(t *testing.T) {
 	teams := []Team{team1}
 	game := NewGame(teams)
 	t.Logf("game = %+v\n", game)
+
+	// This is a hack to add typing to JSON because the interface info is lost
+	wwwJson, _ := json.Marshal(team1.Services[0].ServiceType)
+	wwwTypedJson := TypedJson{"www", wwwJson}
+
+	dnsJson, _ := json.Marshal(team1.Services[1].ServiceType)
+	dnsTypedJson := TypedJson{"dns", dnsJson}
+
+	ftpJson, _ := json.Marshal(team1.Services[2].ServiceType)
+	ftpTypedJson := TypedJson{"ftp", ftpJson}
+
+	sshJson, _ := json.Marshal(team1.Services[3].ServiceType)
+	sshTypedJson := TypedJson{"ssh", sshJson}
+
+	pingJson, _ := json.Marshal(team1.Services[4].ServiceType)
+	pingTypedJson := TypedJson{"ping", pingJson}
+
+	team1.Services[0].ObjectLoad = wwwTypedJson
+	team1.Services[1].ObjectLoad = dnsTypedJson
+	team1.Services[2].ObjectLoad = ftpTypedJson
+	team1.Services[3].ObjectLoad = sshTypedJson
+	team1.Services[4].ObjectLoad = pingTypedJson
+
+	finalJson, _ := json.Marshal(teams)
+	t.Logf(string(finalJson))
 }

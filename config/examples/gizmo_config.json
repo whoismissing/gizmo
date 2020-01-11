@@ -1,25 +1,111 @@
-"teamid": 1 {
-	"services" {
-		"www" {
-			"url":"192.168.1.1",
-		},
-		"ftp" {
-			"username":"ccdc",
-			"password":"P@ssw0rd",	
-		},
-		"ssh" {
-			"username":"ccdc",
-			"password":"P@ssw0rd",
-			"command":"ls",
-		},
-		"dns" {
-			"domains" {
-				"ccdc.local",
-			}
-		},
-		"ping" {
-			"ip":"192.168.1.1",
-		}
-
-	}
-}
+[
+    {
+        "TeamID": 1,
+        "TotalChecksMissed": 0,
+        "TotalChecksHit": 0,
+        "TotalChecksAttempted": 0,
+        "Services": [
+            {
+                "Name": "",
+                "Status": false,
+                "ObjectLoad": {
+                    "Type": "www",
+                    "Data": {
+                        "URL": "team1.local"
+                    }
+                },
+                "ServiceType": {
+                    "URL": "team1.local"
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            },
+            {
+                "Name": "",
+                "Status": false,
+                "ObjectLoad": {
+                    "Type": "dns",
+                    "Data": {
+                        "DomainName": "team1.local"
+                    }
+                },
+                "ServiceType": {
+                    "DomainName": "team1.local"
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            },
+            {
+                "Name": "",
+                "Status": false,
+                "ObjectLoad": {
+                    "Type": "ftp",
+                    "Data": {
+                        "Username": "anonymous",
+                        "Password": ""
+                    }
+                },
+                "ServiceType": {
+                    "Username": "anonymous",
+                    "Password": ""
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            },
+            {
+                "Name": "",
+                "Status": false,
+                "ObjectLoad": {
+                    "Type": "ssh",
+                    "Data": {
+                        "Username": "ccdc",
+                        "Password": "changeme",
+                        "Command": "ls"
+                    }
+                },
+                "ServiceType": {
+                    "Username": "ccdc",
+                    "Password": "changeme",
+                    "Command": "ls"
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            },
+            {
+                "Name": "",
+                "Status": false,
+                "ObjectLoad": {
+                    "Type": "ping",
+                    "Data": {
+                        
+                    }
+                },
+                "ServiceType": {
+                    
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            }
+        ]
+    }
+]
