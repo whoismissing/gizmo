@@ -21,8 +21,8 @@ type Team struct {
 type Service struct {
 	Name string
 	Status bool
-	ObjectLoad TypedJson
 	ServiceType ServiceType
+	ServiceCheck ServiceCheck
 	HostIP string
 	TeamID uint
 	ChecksMissed uint
@@ -36,12 +36,12 @@ type Status struct {
 	Status bool
 }
 
-type TypedJson struct {
+type ServiceType struct {
 	Type string
-	Data json.RawMessage
+	ServiceCheck json.RawMessage
 }
 
-type ServiceType interface {
+type ServiceCheck interface {
 	CheckHealth()
 }
 
@@ -86,6 +86,36 @@ func (ssh SecureShellService) CheckHealth() {
 
 func (ping PingService) CheckHealth() {
 
+}
+
+func LoadFromServiceType(serviceType ServiceType) ServiceCheck {
+	data := serviceType.ServiceCheck
+	switch stype := serviceType.Type; stype {
+	case "www":
+		var www WebService
+		_ = json.Unmarshal(data, &www)
+		return www
+	case "dns":
+		var dns DomainNameService
+		_ = json.Unmarshal(data, &dns)
+		return dns
+	case "ftp":
+		var ftp FileTransferService
+		_ = json.Unmarshal(data, &ftp)
+		return ftp
+	case "ssh":
+		var ssh SecureShellService
+		_ = json.Unmarshal(data, &ssh)
+		return ssh
+	case "ping":
+		var ping PingService
+		_ = json.Unmarshal(data, &ping)
+		return ping
+	case "default":
+		return nil
+	}
+
+	return nil
 }
 
 func NewGame(teams []Team) Game {

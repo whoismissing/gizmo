@@ -8,13 +8,13 @@
             {
                 "Name": "",
                 "Status": false,
-                "ObjectLoad": {
+                "ServiceType": {
                     "Type": "www",
-                    "Data": {
+                    "ServiceCheck": {
                         "URL": "team1.local"
                     }
                 },
-                "ServiceType": {
+                "ServiceCheck": {
                     "URL": "team1.local"
                 },
                 "HostIP": "",
@@ -27,13 +27,13 @@
             {
                 "Name": "",
                 "Status": false,
-                "ObjectLoad": {
+                "ServiceType": {
                     "Type": "dns",
-                    "Data": {
+                    "ServiceCheck": {
                         "DomainName": "team1.local"
                     }
                 },
-                "ServiceType": {
+                "ServiceCheck": {
                     "DomainName": "team1.local"
                 },
                 "HostIP": "",
@@ -46,14 +46,14 @@
             {
                 "Name": "",
                 "Status": false,
-                "ObjectLoad": {
+                "ServiceType": {
                     "Type": "ftp",
-                    "Data": {
+                    "ServiceCheck": {
                         "Username": "anonymous",
                         "Password": ""
                     }
                 },
-                "ServiceType": {
+                "ServiceCheck": {
                     "Username": "anonymous",
                     "Password": ""
                 },
@@ -67,15 +67,15 @@
             {
                 "Name": "",
                 "Status": false,
-                "ObjectLoad": {
+                "ServiceType": {
                     "Type": "ssh",
-                    "Data": {
+                    "ServiceCheck": {
                         "Username": "ccdc",
                         "Password": "changeme",
                         "Command": "ls"
                     }
                 },
-                "ServiceType": {
+                "ServiceCheck": {
                     "Username": "ccdc",
                     "Password": "changeme",
                     "Command": "ls"
@@ -90,13 +90,13 @@
             {
                 "Name": "",
                 "Status": false,
-                "ObjectLoad": {
+                "ServiceType": {
                     "Type": "ping",
-                    "Data": {
+                    "ServiceCheck": {
                         
                     }
                 },
-                "ServiceType": {
+                "ServiceCheck": {
                     
                 },
                 "HostIP": "",

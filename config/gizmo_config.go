@@ -7,8 +7,24 @@ import (
 	"fmt"
 )
 
-func UnmarshalTypedJson(structs.TypedJson) structs.ServiceType {
+func LoadServiceChecks(services []structs.Service) {
+	for i := 0; i < len(services); i++ {
+		serviceType := services[i].ServiceType
+		serviceCheck := structs.LoadFromServiceType(serviceType)
+		services[i].ServiceCheck = serviceCheck
+	}
+}
 
+func LoadTeams(config []byte) []structs.Team {
+	var teams []structs.Team
+	_ = json.Unmarshal(config, &teams)
+
+	for i := 0; i < len(teams); i++ {
+		services := teams[i].Services
+		LoadServiceChecks(services)
+	}
+
+	return teams
 }
 
 func LoadConfig(filename string) {
@@ -18,17 +34,8 @@ func LoadConfig(filename string) {
 		panic(err)
 	}
 
-	var teams []structs.Team
-	_ = json.Unmarshal(config, &teams)
+	teams := LoadTeams(config)
 
-	// TODO: handle unmarshalling of ServiceType interface
-
-	/*
-	if err != nil {
-		fmt.Println("Failed to unmarshal JSON")
-		panic(err)
-	}
-	*/
-
-	fmt.Printf("%+v\n", teams)
+	team1 := teams[0]
+	fmt.Printf("services = %+v\n", team1.Services)
 }
