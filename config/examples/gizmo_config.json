@@ -1,0 +1,111 @@
+[
+    {
+        "TeamID": 1,
+        "TotalChecksMissed": 0,
+        "TotalChecksHit": 0,
+        "TotalChecksAttempted": 0,
+        "Services": [
+            {
+                "Name": "",
+                "Status": false,
+                "ServiceType": {
+                    "Type": "www",
+                    "ServiceCheck": {
+                        "URL": "team1.local"
+                    }
+                },
+                "ServiceCheck": {
+                    "URL": "team1.local"
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            },
+            {
+                "Name": "",
+                "Status": false,
+                "ServiceType": {
+                    "Type": "dns",
+                    "ServiceCheck": {
+                        "DomainName": "team1.local"
+                    }
+                },
+                "ServiceCheck": {
+                    "DomainName": "team1.local"
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            },
+            {
+                "Name": "",
+                "Status": false,
+                "ServiceType": {
+                    "Type": "ftp",
+                    "ServiceCheck": {
+                        "Username": "anonymous",
+                        "Password": ""
+                    }
+                },
+                "ServiceCheck": {
+                    "Username": "anonymous",
+                    "Password": ""
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            },
+            {
+                "Name": "",
+                "Status": false,
+                "ServiceType": {
+                    "Type": "ssh",
+                    "ServiceCheck": {
+                        "Username": "ccdc",
+                        "Password": "changeme",
+                        "Command": "ls"
+                    }
+                },
+                "ServiceCheck": {
+                    "Username": "ccdc",
+                    "Password": "changeme",
+                    "Command": "ls"
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            },
+            {
+                "Name": "",
+                "Status": false,
+                "ServiceType": {
+                    "Type": "ping",
+                    "ServiceCheck": {
+                        
+                    }
+                },
+                "ServiceCheck": {
+                    
+                },
+                "HostIP": "",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            }
+        ]
+    }
+]
