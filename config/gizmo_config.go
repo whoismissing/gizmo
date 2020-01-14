@@ -27,7 +27,7 @@ func LoadTeams(config []byte) []structs.Team {
 	return teams
 }
 
-func LoadConfig(filename string) {
+func LoadConfig(filename string) []structs.Team {
 	config, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println("Failed to load config")
@@ -36,6 +36,5 @@ func LoadConfig(filename string) {
 
 	teams := LoadTeams(config)
 
-	team1 := teams[0]
-	fmt.Printf("services = %+v\n", team1.Services)
+	return teams
 }

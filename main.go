@@ -1,45 +1,43 @@
 package main
 
 import (
-	//"database/sql"
-	//db_utils "github.com/whoismissing/gizmo/dbutils"
-
-	//_ "github.com/mattn/go-sqlite3"
+	"database/sql"
+	"github.com/akamensky/argparse"
+	_ "github.com/mattn/go-sqlite3"
+	dbutils "github.com/whoismissing/gizmo/dbutils"
+	config "github.com/whoismissing/gizmo/config"
 	structs "github.com/whoismissing/gizmo/structs"
+
+	"os"
 	"fmt"
-	"reflect"
 )
 
+func parseArgs(parser *argparse.Parser) (string, string) {
+	conf := parser.String("i", "input", &argparse.Options{Required: true, Help: "Input config filename"})
+
+	defaultFilename := "gizmo.db"
+	dbName := parser.String("o", "output", &argparse.Options{Required: false, Default: defaultFilename, Help: "Output database filename"})
+
+	err := parser.Parse(os.Args)
+	if err != nil {
+		fmt.Print(parser.Usage(err))
+		os.Exit(1)
+	}
+
+	return *conf, *dbName
+}
+
 func main() {
-	//db, _ := sql.Open("sqlite3", "./gizmo.db")
-	//db_utils.InitializeDatabase(db)
+	confName, dbName := parseArgs(argparse.NewParser("gizmo", "Service uptime scoreboard"))
 
-	game := structs.NewGame(nil) // {teams: nil, time: 1}
-	fmt.Printf("game = %+v\n", game)
+	db, _ := sql.Open("sqlite3", dbName)
+	dbutils.InitializeDatabase(db)
 
-	teams := structs.NewTeams(5)
-	teams[0].Services = make([]structs.Service, 5)
-	teams[1].Services = make([]structs.Service, 3)
-	fmt.Printf("teams = %+v\n", teams)
+	teams := config.LoadConfig(confName)
+	game := structs.NewGame(teams)
 
-	www := structs.WebService{URL: "google.com"}
-	fmt.Printf("www = %+v\n", www)
+	// TODO: write code to insert values of game into SQL database
 
-	fmt.Println("type ", reflect.TypeOf(www))
+	fmt.Printf("%+v\n", game)
 
-	service := structs.NewService("www", 69)
-	service.ServiceType = www
-	fmt.Printf("service = %+v\n", service)
-	fmt.Println("type ", reflect.TypeOf(www))
-
-	/*
-	team1 := structs.NewTeam(69)
-	fmt.Printf("team = %+v\n", team1)
-
-	service := structs.NewService("www", 69)
-	fmt.Printf("service = %+v\n", service)
-
-	status := structs.NewStatus(23, false)
-	fmt.Printf("status = %+v\n", status)
-	*/
 }
