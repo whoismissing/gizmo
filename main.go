@@ -1,15 +1,16 @@
 package main
 
 import (
-	"database/sql"
 	"github.com/akamensky/argparse"
 	_ "github.com/mattn/go-sqlite3"
 	dbutils "github.com/whoismissing/gizmo/dbutils"
 	config "github.com/whoismissing/gizmo/config"
 	structs "github.com/whoismissing/gizmo/structs"
 
+	"database/sql"
 	"os"
 	"fmt"
+	"sync"
 )
 
 func parseArgs(parser *argparse.Parser) (string, string) {
@@ -37,6 +38,23 @@ func main() {
 	game := structs.NewGame(teams)
 
 	// TODO: write code to insert values of game into SQL database
+
+	for i := 0; i < len(teams); i++ {
+		team := teams[i]
+
+		// Concurrent service checks
+		var wg sync.WaitGroup
+		for j:= 0; j < len(team.Services); j++ {
+			service := team.Services[j]
+			wg.Add(1)
+			go service.ServiceCheck.CheckHealth(j, &wg)
+		}
+		wg.Wait()
+
+	}
+
+	// Loop on a five minute timer until next service check
+	time.Sleep(300 * time.Second)
 
 	fmt.Printf("%+v\n", game)
 

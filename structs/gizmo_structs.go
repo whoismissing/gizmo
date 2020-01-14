@@ -3,6 +3,8 @@ package structs
 import (
 	"time"
 	"encoding/json"
+	"sync"
+	"fmt"
 )
 
 type Game struct {
@@ -42,7 +44,7 @@ type ServiceType struct {
 }
 
 type ServiceCheck interface {
-	CheckHealth()
+	CheckHealth(id int, wg *sync.WaitGroup)
 }
 
 type WebService struct {
@@ -68,24 +70,29 @@ type PingService struct {
 
 }
 
-func (www WebService) CheckHealth() {
-
+func (www WebService) CheckHealth(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("www CheckHealth()", id)
 }
 
-func (dns DomainNameService) CheckHealth() {
-
+func (dns DomainNameService) CheckHealth(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("dns CheckHealth()", id)
 }
 
-func (ftp FileTransferService) CheckHealth() {
-
+func (ftp FileTransferService) CheckHealth(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("ftp CheckHealth()", id)
 }
 
-func (ssh SecureShellService) CheckHealth() {
-
+func (ssh SecureShellService) CheckHealth(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("ssh CheckHealth()", id)
 }
 
-func (ping PingService) CheckHealth() {
-
+func (ping PingService) CheckHealth(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("ping CheckHealth()", id)
 }
 
 func LoadFromServiceType(serviceType ServiceType) ServiceCheck {
