@@ -1,15 +1,17 @@
 package main
 
 import (
-	"github.com/akamensky/argparse"
-	_ "github.com/mattn/go-sqlite3"
 	dbutils "github.com/whoismissing/gizmo/dbutils"
 	config "github.com/whoismissing/gizmo/config"
 	structs "github.com/whoismissing/gizmo/structs"
+	"github.com/akamensky/argparse"
+	_ "github.com/mattn/go-sqlite3"
 
 	"database/sql"
+	"net/http"
 	"os"
 	"fmt"
+	"time"
 	"sync"
 )
 
@@ -28,28 +30,42 @@ func parseArgs(parser *argparse.Parser) (string, string) {
 	return *conf, *dbName
 }
 
+func GetScoreboard(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
+}
+
+func ConcurrentServiceCheck(services []structs.Service) {
+	var wg sync.WaitGroup
+	for i:= 0; i < len(services); i++ {
+		service := services[i]
+		wg.Add(1)
+		go service.ServiceCheck.CheckHealth(i, &wg)
+	}
+	wg.Wait()
+}
+
 func main() {
 	confName, dbName := parseArgs(argparse.NewParser("gizmo", "Service uptime scoreboard"))
 
 	db, _ := sql.Open("sqlite3", dbName)
-	dbutils.InitializeDatabase(db)
+	dbutils.CreateDatabase(db)
 
 	teams := config.LoadConfig(confName)
 	game := structs.NewGame(teams)
+
+	dbutils.InitializeDatabase(db, game)
+
+	//http.HandleFunc("/", GetScoreboard)
+	//http.ListenAndServe(":8080", nil)
 
 	// TODO: write code to insert values of game into SQL database
 
 	for i := 0; i < len(teams); i++ {
 		team := teams[i]
 
-		// Concurrent service checks
-		var wg sync.WaitGroup
-		for j:= 0; j < len(team.Services); j++ {
-			service := team.Services[j]
-			wg.Add(1)
-			go service.ServiceCheck.CheckHealth(j, &wg)
-		}
-		wg.Wait()
+		services := team.Services
+		ConcurrentServiceCheck(services)
+		// TODO: Update SQL database with statuses
 
 	}
 
@@ -57,5 +73,4 @@ func main() {
 	time.Sleep(300 * time.Second)
 
 	fmt.Printf("%+v\n", game)
-
 }

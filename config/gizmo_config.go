@@ -1,9 +1,10 @@
 package config
 
 import (
+	structs "github.com/whoismissing/gizmo/structs"
+
 	"io/ioutil"
 	"encoding/json"
-	structs "github.com/whoismissing/gizmo/structs"
 	"fmt"
 )
 
@@ -11,6 +12,9 @@ func LoadServiceChecks(services []structs.Service) {
 	for i := 0; i < len(services); i++ {
 		serviceType := services[i].ServiceType
 		serviceCheck := structs.LoadFromServiceType(serviceType)
+		if services[i].Name == "" {
+			services[i].Name = serviceType.Type
+		}
 		services[i].ServiceCheck = serviceCheck
 	}
 }

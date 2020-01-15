@@ -17,7 +17,7 @@
                 "ServiceCheck": {
                     "URL": "team1.local"
                 },
-                "HostIP": "",
+                "HostIP": "192.168.56.100",
                 "TeamID": 1,
                 "ChecksMissed": 0,
                 "ChecksHit": 0,
@@ -36,7 +36,7 @@
                 "ServiceCheck": {
                     "DomainName": "team1.local"
                 },
-                "HostIP": "",
+                "HostIP": "192.168.56.101",
                 "TeamID": 1,
                 "ChecksMissed": 0,
                 "ChecksHit": 0,
@@ -57,7 +57,7 @@
                     "Username": "anonymous",
                     "Password": ""
                 },
-                "HostIP": "",
+                "HostIP": "192.168.56.102",
                 "TeamID": 1,
                 "ChecksMissed": 0,
                 "ChecksHit": 0,
@@ -65,7 +65,7 @@
                 "PrevStatuses": null
             },
             {
-                "Name": "",
+                "Name": "ssh1",
                 "Status": false,
                 "ServiceType": {
                     "Type": "ssh",
@@ -80,7 +80,7 @@
                     "Password": "changeme",
                     "Command": "ls"
                 },
-                "HostIP": "",
+                "HostIP": "192.168.56.103",
                 "TeamID": 1,
                 "ChecksMissed": 0,
                 "ChecksHit": 0,
@@ -99,7 +99,7 @@
                 "ServiceCheck": {
                     
                 },
-                "HostIP": "",
+                "HostIP": "192.168.56.109",
                 "TeamID": 1,
                 "ChecksMissed": 0,
                 "ChecksHit": 0,

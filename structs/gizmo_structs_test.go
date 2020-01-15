@@ -1,8 +1,8 @@
 package structs
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
 )
 
 func TestInitializeStructs(t *testing.T) {

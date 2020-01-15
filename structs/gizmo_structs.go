@@ -1,8 +1,8 @@
 package structs
 
 import (
-	"time"
 	"encoding/json"
+	"time"
 	"sync"
 	"fmt"
 )

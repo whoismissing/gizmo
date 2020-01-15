@@ -1,8 +1,8 @@
 package dbutils
 
 import (
-	"testing"
 	"database/sql"
+	"testing"
 	"log"
 	"os"
 )
