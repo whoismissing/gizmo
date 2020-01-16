@@ -99,7 +99,7 @@
                 "ServiceCheck": {
                     
                 },
-                "HostIP": "192.168.56.109",
+                "HostIP": "8.8.8.8",
                 "TeamID": 1,
                 "ChecksMissed": 0,
                 "ChecksHit": 0,

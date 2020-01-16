@@ -75,10 +75,6 @@ type PingService struct {
 
 }
 
-func setCurrentStatus(service Service, status bool) {
-	service.Status = status
-}
-
 func updateCheckCount(service *Service, status bool) {
 	if status == true {
 		(*service).ChecksHit += 1
@@ -86,7 +82,15 @@ func updateCheckCount(service *Service, status bool) {
 		(*service).ChecksMissed += 1
 	}
 
+	(*service).Status = status
 	(*service).ChecksAttempted += 1
+
+	currStatus := NewStatus(status)
+	(*service).PrevStatuses = append((*service).PrevStatuses, currStatus)
+	trunc := len((*service).PrevStatuses) - 1
+	if trunc > 9 {
+		(*service).PrevStatuses = (*service).PrevStatuses[:trunc]
+	}
 }
 
 func UpdateTeamCheckCount(team *Team) {

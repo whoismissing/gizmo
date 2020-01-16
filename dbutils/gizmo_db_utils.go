@@ -249,9 +249,49 @@ func updateServiceTable(db *sql.DB, service structs.Service) {
 
 }
 
+func updateStatusTable(db *sql.DB, service structs.Service) {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stmt, err := tx.Prepare(`
+	INSERT INTO "Status" (
+		"ServiceID",
+		"Time",
+		"State"
+	) VALUES ( ?, ?, ?);
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	serviceID := service.ServiceID
+	top := len(service.PrevStatuses) - 1
+
+	/* if service.PrevStatuses is empty */
+	if top < 0 {
+		return
+	}
+
+	status := service.PrevStatuses[top]
+	_, err = stmt.Exec(serviceID, status.Time, status.Status)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_ = tx.Commit()
+	stmt.Close()
+
+	return
+
+}
+
+
 func updateServices(db *sql.DB, services []structs.Service) {
 	for i := 0; i < len(services); i++ {
 		updateServiceTable(db, services[i])
+		updateStatusTable(db, services[i])
 	}
 }
 

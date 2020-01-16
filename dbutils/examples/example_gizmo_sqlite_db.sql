@@ -33,6 +33,7 @@ INSERT INTO "Team" ("GameID","TeamID","TotalMissedChecks","TotalChecks") VALUES 
 INSERT INTO "Game" ("GameStartTime","CurrentGameTime","GameID") VALUES (1566517722,1566517722,1);
 
 INSERT INTO "Status" ("ServiceID","StatusID","Time","State") VALUES (1,1,1566518090,'UP');
+INSERT INTO "Status" ("ServiceID", "Time", "State") VALUES (3, 123, 'UP');
 UPDATE "Game" SET "CurrentGameTime"=1337 WHERE "GameID"='5577006791947779410';
 UPDATE "Service" SET "NumberOfMissedChecks"=?,"NumberOfChecks"=? WHERE "ServiceID"='0';
 UPDATE "Team" SET "TotalMissedChecks"=?,"TotalChecks"=? WHERE "TeamID"='1';
