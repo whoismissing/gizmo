@@ -6,7 +6,6 @@ import (
 
 	"database/sql"
 	"log"
-	"fmt"
 	"time"
 )
 
@@ -99,7 +98,6 @@ func initializeService(db *sql.DB, service structs.Service, serviceID int) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("service = +%v\n", service)
 	name := service.Name
 	teamID := service.TeamID
 	hostIP := service.HostIP

@@ -1,6 +1,8 @@
 package structs
 
 import (
+	check "github.com/whoismissing/gizmo/check"
+
 	"encoding/json"
 	"math/rand"
 	"time"
@@ -47,7 +49,7 @@ type ServiceType struct {
 }
 
 type ServiceCheck interface {
-	CheckHealth(id int, wg *sync.WaitGroup)
+	CheckHealth(service *Service, wg *sync.WaitGroup)
 }
 
 type WebService struct {
@@ -73,29 +75,59 @@ type PingService struct {
 
 }
 
-func (www WebService) CheckHealth(id int, wg *sync.WaitGroup) {
-	defer wg.Done()
-	fmt.Println("www CheckHealth()", id)
+func setCurrentStatus(service Service, status bool) {
+	service.Status = status
 }
 
-func (dns DomainNameService) CheckHealth(id int, wg *sync.WaitGroup) {
-	defer wg.Done()
-	fmt.Println("dns CheckHealth()", id)
+func updateCheckCount(service *Service, status bool) {
+	if status == true {
+		(*service).ChecksHit += 1
+	} else {
+		(*service).ChecksMissed += 1
+	}
+
+	(*service).ChecksAttempted += 1
 }
 
-func (ftp FileTransferService) CheckHealth(id int, wg *sync.WaitGroup) {
-	defer wg.Done()
-	fmt.Println("ftp CheckHealth()", id)
+func UpdateTeamCheckCount(team *Team) {
+	services := (*team).Services
+	for i := 0; i < len(services); i++ {
+		service := services[i]
+
+		(*team).TotalChecksHit += service.ChecksHit
+		(*team).TotalChecksMissed += service.ChecksMissed
+		(*team).TotalChecksAttempted += service.ChecksAttempted
+	}
 }
 
-func (ssh SecureShellService) CheckHealth(id int, wg *sync.WaitGroup) {
+func (www WebService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Println("ssh CheckHealth()", id)
+	fmt.Println("www CheckHealth()")
 }
 
-func (ping PingService) CheckHealth(id int, wg *sync.WaitGroup) {
+func (dns DomainNameService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Println("ping CheckHealth()", id)
+	fmt.Println("dns CheckHealth()")
+}
+
+func (ftp FileTransferService) CheckHealth(service *Service, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("ftp CheckHealth()")
+}
+
+func (ssh SecureShellService) CheckHealth(service *Service, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("ssh CheckHealth()")
+}
+
+func (ping PingService) CheckHealth(service *Service, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("ping CheckHealth()")
+
+	ip := (*service).HostIP
+	status := check.Ping(ip)
+
+	updateCheckCount(service, status)
 }
 
 func LoadFromServiceType(serviceType ServiceType) ServiceCheck {

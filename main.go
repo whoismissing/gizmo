@@ -34,12 +34,13 @@ func GetScoreboard(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
 }
 
-func ConcurrentServiceCheck(services []structs.Service) {
+func ConcurrentServiceCheck(servicesPtr *[]structs.Service) {
 	var wg sync.WaitGroup
+	services := *servicesPtr
 	for i:= 0; i < len(services); i++ {
 		service := services[i]
 		wg.Add(1)
-		go service.ServiceCheck.CheckHealth(i, &wg)
+		go service.ServiceCheck.CheckHealth(&services[i], &wg)
 	}
 	wg.Wait()
 }
@@ -61,14 +62,13 @@ func main() {
 	for i := 0; i < len(teams); i++ {
 		team := teams[i]
 
-		services := team.Services
-		ConcurrentServiceCheck(services)
-		// TODO: Update SQL database with statuses
-		time.Sleep(3 * time.Second)
-		dbutils.UpdateDatabase(db, game)
+		ConcurrentServiceCheck(&team.Services)
 
+		structs.UpdateTeamCheckCount(&teams[i])
+		dbutils.UpdateDatabase(db, game)
 	}
 
+	time.Sleep(1 * time.Second)
 	// Loop on a five minute timer until next service check
 	//time.Sleep(300 * time.Second)
 
