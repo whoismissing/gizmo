@@ -29,7 +29,12 @@ CREATE TABLE IF NOT EXISTS "Game" (
 );
 INSERT INTO "Service" ("Name","TeamID","ServiceID","HostIP","NumberOfMissedChecks","NumberOfChecks","User","Password","Domain") VALUES ('www',1,1,'127.0.0.1',0,0,NULL,NULL,'localhost');
 INSERT INTO "Service" ("Name","TeamID","ServiceID","HostIP","NumberOfMissedChecks","NumberOfChecks","User","Password","Domain") VALUES ('ssh1',1,2,'127.0.0.1',0,0,'foo','bar',NULL);
-INSERT INTO "Status" ("ServiceID","StatusID","Time","State") VALUES (1,1,1566518090,'UP');
 INSERT INTO "Team" ("GameID","TeamID","TotalMissedChecks","TotalChecks") VALUES (1,1,0,0);
 INSERT INTO "Game" ("GameStartTime","CurrentGameTime","GameID") VALUES (1566517722,1566517722,1);
+
+INSERT INTO "Status" ("ServiceID","StatusID","Time","State") VALUES (1,1,1566518090,'UP');
+UPDATE "Game" SET "CurrentGameTime"=1337 WHERE "GameID"='5577006791947779410';
+UPDATE "Service" SET "NumberOfMissedChecks"=?,"NumberOfChecks"=? WHERE "ServiceID"='0';
+UPDATE "Team" SET "TotalMissedChecks"=?,"TotalChecks"=? WHERE "TeamID"='1';
+
 COMMIT;

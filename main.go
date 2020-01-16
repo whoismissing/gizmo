@@ -58,19 +58,19 @@ func main() {
 	//http.HandleFunc("/", GetScoreboard)
 	//http.ListenAndServe(":8080", nil)
 
-	// TODO: write code to insert values of game into SQL database
-
 	for i := 0; i < len(teams); i++ {
 		team := teams[i]
 
 		services := team.Services
 		ConcurrentServiceCheck(services)
 		// TODO: Update SQL database with statuses
+		time.Sleep(3 * time.Second)
+		dbutils.UpdateDatabase(db, game)
 
 	}
 
 	// Loop on a five minute timer until next service check
-	time.Sleep(300 * time.Second)
+	//time.Sleep(300 * time.Second)
 
 	fmt.Printf("%+v\n", game)
 }

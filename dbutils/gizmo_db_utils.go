@@ -1,15 +1,13 @@
 package dbutils
 
-// TODO: Implement gameID usage in InitializeTeams
-
 import (
 	structs "github.com/whoismissing/gizmo/structs"
 	_ "github.com/mattn/go-sqlite3"
 
 	"database/sql"
-	"math/rand"
 	"log"
 	"fmt"
+	"time"
 )
 
 func createGameTable(db *sql.DB) {
@@ -121,13 +119,14 @@ func initializeService(db *sql.DB, service structs.Service, serviceID int) {
 func initializeServices(db *sql.DB, services []structs.Service) {
 
 	for i := 0; i < len(services); i++ {
+		services[i].ServiceID = i
 		initializeService(db, services[i], i)
 	}
 
 	return
 }
 
-func initializeTeam(db *sql.DB, team structs.Team) {
+func initializeTeam(db *sql.DB, team structs.Team, gameID int) {
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -143,7 +142,7 @@ func initializeTeam(db *sql.DB, team structs.Team) {
 	`)
 
 	teamID := team.TeamID
-	_, err = stmt.Exec(0, teamID, 0, 0)
+	_, err = stmt.Exec(gameID, teamID, 0, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -157,9 +156,9 @@ func initializeTeam(db *sql.DB, team structs.Team) {
 	return
 }
 
-func initializeTeams(db *sql.DB, teams []structs.Team) {
+func initializeTeams(db *sql.DB, teams []structs.Team, gameID int) {
 	for i := 0; i < len(teams); i++ {
-		initializeTeam(db, teams[i])
+		initializeTeam(db, teams[i], gameID)
 	}
 }
 
@@ -181,7 +180,7 @@ func initializeGame(db *sql.DB, game structs.Game) {
 	}
 
 	gameStartTime := game.StartTime.Unix()
-	gameID := rand.Int()
+	gameID := game.GameID
 	_, err = stmt.Exec(gameStartTime, gameStartTime, gameID)
 	if err != nil {
 		log.Fatal(err)
@@ -191,9 +190,107 @@ func initializeGame(db *sql.DB, game structs.Game) {
 	stmt.Close()
 
 	teams := game.Teams
-	initializeTeams(db, teams)
+	initializeTeams(db, teams, gameID)
 
 	return
+}
+
+func updateGameTable(db *sql.DB, game structs.Game) {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stmt, err := tx.Prepare(`
+	UPDATE "Game" SET "CurrentGameTime"=?
+	WHERE "GameID"=?;
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	currentGameTime := time.Now().Unix()
+	gameID := game.GameID
+	_, err = stmt.Exec(currentGameTime, gameID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_ = tx.Commit()
+	stmt.Close()
+
+	return
+}
+
+func updateServiceTable(db *sql.DB, service structs.Service) {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stmt, err := tx.Prepare(`
+	UPDATE "Service" SET 
+		"NumberOfMissedChecks"=?,
+		"NumberOfChecks"=?
+	WHERE "ServiceID"=?;
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	serviceID := service.ServiceID
+	_, err = stmt.Exec(service.ChecksMissed, service.ChecksAttempted, serviceID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_ = tx.Commit()
+	stmt.Close()
+
+	return
+
+}
+
+func updateServices(db *sql.DB, services []structs.Service) {
+	for i := 0; i < len(services); i++ {
+		updateServiceTable(db, services[i])
+	}
+}
+
+func updateTeamTable(db *sql.DB, team structs.Team) {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stmt, err := tx.Prepare(`
+	UPDATE "Team" SET 
+		"TotalMissedChecks"=?,
+		"TotalChecks"=?
+	WHERE "TeamID"=?;
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = stmt.Exec(team.TotalChecksMissed, team.TotalChecksAttempted, team.TeamID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_ = tx.Commit()
+	stmt.Close()
+
+	updateServices(db, team.Services)
+
+	return
+
+}
+
+func updateTeams(db *sql.DB, teams []structs.Team) {
+	for i := 0; i < len(teams); i++ {
+		updateTeamTable(db, teams[i])
+	}
 }
 
 func CreateDatabase(db *sql.DB) {
@@ -205,4 +302,9 @@ func CreateDatabase(db *sql.DB) {
 
 func InitializeDatabase(db *sql.DB, game structs.Game) {
 	initializeGame(db, game)
+}
+
+func UpdateDatabase(db *sql.DB, game structs.Game) {
+	updateGameTable(db, game)
+	updateTeams(db, game.Teams)
 }

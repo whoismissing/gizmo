@@ -2,12 +2,14 @@ package structs
 
 import (
 	"encoding/json"
+	"math/rand"
 	"time"
 	"sync"
 	"fmt"
 )
 
 type Game struct {
+	GameID int
 	Teams []Team
 	StartTime time.Time
 }
@@ -21,6 +23,7 @@ type Team struct {
 }
 
 type Service struct {
+	ServiceID int
 	Name string
 	Status bool
 	ServiceType ServiceType
@@ -126,7 +129,7 @@ func LoadFromServiceType(serviceType ServiceType) ServiceCheck {
 }
 
 func NewGame(teams []Team) Game {
-	game := Game{Teams: teams, StartTime: time.Now()}
+	game := Game{GameID:rand.Int(), Teams: teams, StartTime: time.Now()}
 	return game
 }
 
