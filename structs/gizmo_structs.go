@@ -106,31 +106,57 @@ func UpdateTeamCheckCount(team *Team) {
 
 func (www WebService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Println("www CheckHealth()")
+
+	ip := (*service).HostIP
+	fmt.Printf("curling %s\n", ip)
+
+	status := check.Web(ip)
+	updateCheckCount(service, status)
 }
 
 func (dns DomainNameService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Println("dns CheckHealth()")
+
+	ip := (*service).HostIP
+	record := dns.DomainName
+	fmt.Printf("digging record %s at %s\n", record, ip)
+
+	status := check.Dns(ip, record)
+	updateCheckCount(service, status)
 }
 
 func (ftp FileTransferService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Println("ftp CheckHealth()")
+
+	ip := (*service).HostIP
+	user := ftp.Username
+	pass := ftp.Password
+	filename := "hello.txt"
+	fmt.Printf("ftping file %s at %s with user: %s pass %s\n", filename, ip, user, pass)
+
+	status := check.Ftp(ip, user, pass, filename)
+	updateCheckCount(service, status)
 }
 
 func (ssh SecureShellService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Println("ssh CheckHealth()")
+
+	ip := (*service).HostIP
+	user := ssh.Username
+	pass := ssh.Password
+	fmt.Printf("ssh at %s user: %s pass: %s\n", ip, user, pass)
+
+	status := check.Ssh(ip, user, pass)
+	updateCheckCount(service, status)
 }
 
 func (ping PingService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Println("ping CheckHealth()")
 
 	ip := (*service).HostIP
-	status := check.Ping(ip)
+	fmt.Printf("pinging %s\n", ip)
 
+	status := check.Ping(ip)
 	updateCheckCount(service, status)
 }
 

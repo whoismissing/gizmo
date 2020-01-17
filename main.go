@@ -4,6 +4,7 @@ import (
 	dbutils "github.com/whoismissing/gizmo/dbutils"
 	config "github.com/whoismissing/gizmo/config"
 	structs "github.com/whoismissing/gizmo/structs"
+	web "github.com/whoismissing/gizmo/web"
 	"github.com/akamensky/argparse"
 	_ "github.com/mattn/go-sqlite3"
 
@@ -11,9 +12,13 @@ import (
 	"net/http"
 	"os"
 	"fmt"
+	"log"
 	"time"
+	"math/rand"
 	"sync"
 )
+
+var scoreboardHTML string
 
 func parseArgs(parser *argparse.Parser) (string, string) {
 	conf := parser.String("i", "input", &argparse.Options{Required: true, Help: "Input config filename"})
@@ -31,7 +36,7 @@ func parseArgs(parser *argparse.Parser) (string, string) {
 }
 
 func GetScoreboard(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
+	fmt.Fprintf(w, "%s", scoreboardHTML)
 }
 
 func ConcurrentServiceCheck(servicesPtr *[]structs.Service) {
@@ -56,21 +61,32 @@ func main() {
 
 	dbutils.InitializeDatabase(db, game)
 
-	//http.HandleFunc("/", GetScoreboard)
-	//http.ListenAndServe(":8080", nil)
+	scoreboardHTML = web.GenerateScoreboardHTML(teams)
 
-	for i := 0; i < len(teams); i++ {
-		team := teams[i]
+	// Spin off separate thread for the web server so as not to block main
+	go func() {
+		fmt.Println("web server listening on :8080")
+		http.HandleFunc("/", GetScoreboard)
+		log.Fatal(http.ListenAndServe(":8080", nil))
+	}()
 
-		ConcurrentServiceCheck(&team.Services)
+	// Loop every three to five minutes until next service check
+	min := 180 // 180 seconds = 3 minutes
+	max := 300 // 300 seconds = 5 minutes
+	for {
 
-		structs.UpdateTeamCheckCount(&teams[i])
-		dbutils.UpdateDatabase(db, game)
+		for i := 0; i < len(teams); i++ {
+			team := teams[i]
+
+			ConcurrentServiceCheck(&team.Services)
+			scoreboardHTML = web.GenerateScoreboardHTML(teams)
+
+			structs.UpdateTeamCheckCount(&teams[i])
+			dbutils.UpdateDatabase(db, game)
+		}
+
+		fmt.Println("=======================")
+		sleepTime := rand.Intn(max - min) + min
+		time.Sleep(time.Duration(sleepTime) * time.Second)
 	}
-
-	time.Sleep(1 * time.Second)
-	// Loop on a five minute timer until next service check
-	//time.Sleep(300 * time.Second)
-
-	fmt.Printf("%+v\n", game)
 }
