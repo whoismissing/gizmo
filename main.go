@@ -40,6 +40,7 @@ func GetScoreboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func ConcurrentServiceCheck(servicesPtr *[]structs.Service) {
+	// Spin off a separate goroutine for each service check
 	var wg sync.WaitGroup
 	services := *servicesPtr
 	for i:= 0; i < len(services); i++ {

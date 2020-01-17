@@ -43,6 +43,10 @@ type Status struct {
 	Status bool
 }
 
+/*
+This struct is used as a hack to wrap a ServiceCheck object
+so as not to lose type information when marshalled to JSON
+*/
 type ServiceType struct {
 	Type string
 	ServiceCheck json.RawMessage
@@ -85,9 +89,11 @@ func updateCheckCount(service *Service, status bool) {
 	(*service).Status = status
 	(*service).ChecksAttempted += 1
 
+	// Save the result of the service check in []PrevStatuses
 	currStatus := NewStatus(status)
 	(*service).PrevStatuses = append((*service).PrevStatuses, currStatus)
 	trunc := len((*service).PrevStatuses) - 1
+	// Limit the history length of PrevStatuses
 	if trunc > 9 {
 		(*service).PrevStatuses = (*service).PrevStatuses[:trunc]
 	}
@@ -131,6 +137,7 @@ func (ftp FileTransferService) CheckHealth(service *Service, wg *sync.WaitGroup)
 	ip := (*service).HostIP
 	user := ftp.Username
 	pass := ftp.Password
+	// TODO: obtain FTP filename from JSON config
 	filename := "hello.txt"
 	fmt.Printf("ftping file %s at %s with user: %s pass %s\n", filename, ip, user, pass)
 
@@ -160,6 +167,11 @@ func (ping PingService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	updateCheckCount(service, status)
 }
 
+/*
+This function is used to unmarshal the 
+specified ServiceCheck object type
+wrapped in a ServiceType from the JSON config
+*/
 func LoadFromServiceType(serviceType ServiceType) ServiceCheck {
 	data := serviceType.ServiceCheck
 	switch stype := serviceType.Type; stype {
