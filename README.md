@@ -1,6 +1,10 @@
 # gizmo
 Service checker and scoreboard for CCDC-like exercises.
 
+# Scoreboard Example
+
+![](scoreboard_example.png)
+
 # Usage
 
 ```
@@ -18,9 +22,9 @@ Arguments:
 
 # Releases
 
-Static binaries can be located at [gizmo/releases/](https://github.com/whoismissing/gizmo/releases/gizmo)
+Static binaries can be located at [gizmo/releases/](https://github.com/whoismissing/gizmo/releases)
 
-An example JSON configuration file is located at [gizmo/config/examples/gizmo_config.json](https://github.com/whoismissing/gizmo/config/examples/gizmo_config.json)
+An example JSON configuration file is located at [gizmo/config/examples/gizmo_config.json](https://github.com/whoismissing/gizmo/blob/master/config/examples/gizmo_config.json)
 
 # Installation
 
