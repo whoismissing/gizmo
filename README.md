@@ -29,6 +29,10 @@ An example JSON configuration file is located at [gizmo/config/examples/gizmo_co
 # Installation
 
 ```
+go get -u -v github.com/akamensky/argparse
+go get -u -v github.com/jlaffaye/ftp
+go get -u -v github.com/mattn/go-sqlite3
+go get -u -v golang.org/x/crypto/ssh
 go get -u github.com/whoismissing/gizmo
 go build
 ```
