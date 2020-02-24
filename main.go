@@ -9,12 +9,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"database/sql"
+    "net"
 	"net/http"
 	"os"
 	"fmt"
 	"log"
 	"time"
-	"math/rand"
+	//"math/rand"
 	"sync"
 )
 
@@ -33,6 +34,23 @@ func parseArgs(parser *argparse.Parser) (string, string) {
 	}
 
 	return *conf, *dbName
+}
+
+// GetLocalIP returns the non loopback local IP of the host
+func GetLocalIP() string {
+    addrs, err := net.InterfaceAddrs()
+    if err != nil {
+        return ""
+    }
+    for _, address := range addrs {
+        // check the address type and if it is not a loopback then display it
+        if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+            if ipnet.IP.To4() != nil {
+                return ipnet.IP.String()
+            }
+        }
+    }
+    return ""
 }
 
 func GetScoreboard(w http.ResponseWriter, r *http.Request) {
@@ -66,14 +84,17 @@ func main() {
 
 	// Spin off separate thread for the web server so as not to block main
 	go func() {
-		fmt.Println("web server listening on :8080")
+        local_ip := GetLocalIP()
+		fmt.Printf("web server listening on %s:8080\n", local_ip)
 		http.HandleFunc("/", GetScoreboard)
 		log.Fatal(http.ListenAndServe(":8080", nil))
 	}()
 
+    time.Sleep(time.Duration(1) * time.Second)
+
 	// Loop every three to five minutes until next service check
-	min := 180 // 180 seconds = 3 minutes
-	max := 300 // 300 seconds = 5 minutes
+	//min := 180 // 180 seconds = 3 minutes
+	//max := 300 // 300 seconds = 5 minutes
 	for {
 
 		for i := 0; i < len(teams); i++ {
@@ -87,7 +108,7 @@ func main() {
 		}
 
 		fmt.Println("=======================")
-		sleepTime := rand.Intn(max - min) + min
+		sleepTime := 3 //rand.Intn(max - min) + min
 		time.Sleep(time.Duration(sleepTime) * time.Second)
 	}
 }

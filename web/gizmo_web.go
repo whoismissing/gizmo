@@ -9,6 +9,9 @@ import (
 func GenerateScoreboardHTML(teams []structs.Team) string {
 	html := `<!DOCTYPE html> 
 <html> 
+<head>
+<meta http-equiv="refresh" content="5" />
+</head>
 <body> 
 <table style="width:100%"> 
 <tr> 
@@ -32,7 +35,19 @@ func GenerateScoreboardHTML(teams []structs.Team) string {
 			} else {
 				html += "red"
 			}
-			html += "\"></td>\n"
+			html += "\">"
+            html += services[j].HostIP
+            html += "&emsp;" // 4 spaces in html
+
+            top := len(services[j].PrevStatuses) - 1
+            /* if service.PrevStatuses is empty */
+            if top < 0 {
+
+            } else {
+                html += services[j].PrevStatuses[top].Time.Format("2006-01-02 15:04:05")
+            }
+
+            html += "</td>\n"
 		}
 		html += "</tr>\n"
 	}

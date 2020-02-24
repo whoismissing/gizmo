@@ -114,7 +114,7 @@ func (www WebService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	ip := (*service).HostIP
-	fmt.Printf("curling %s\n", ip)
+	fmt.Printf("[ WWW ] targetip=%s\n", ip)
 
 	status := check.Web(ip)
 	updateCheckCount(service, status)
@@ -125,7 +125,7 @@ func (dns DomainNameService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 
 	ip := (*service).HostIP
 	record := dns.DomainName
-	fmt.Printf("digging record %s at %s\n", record, ip)
+	fmt.Printf("[ DNS ] targetip=%s record=%s\n", ip, record)
 
 	status := check.Dns(ip, record)
 	updateCheckCount(service, status)
@@ -139,7 +139,7 @@ func (ftp FileTransferService) CheckHealth(service *Service, wg *sync.WaitGroup)
 	pass := ftp.Password
 	// TODO: obtain FTP filename from JSON config
 	filename := "hello.txt"
-	fmt.Printf("ftping file %s at %s with user: %s pass %s\n", filename, ip, user, pass)
+	fmt.Printf("[ FTP ] targetip=%s filename=%s username=%s password=%s\n", ip, filename, user, pass)
 
 	status := check.Ftp(ip, user, pass, filename)
 	updateCheckCount(service, status)
@@ -151,7 +151,7 @@ func (ssh SecureShellService) CheckHealth(service *Service, wg *sync.WaitGroup) 
 	ip := (*service).HostIP
 	user := ssh.Username
 	pass := ssh.Password
-	fmt.Printf("ssh at %s user: %s pass: %s\n", ip, user, pass)
+	fmt.Printf("[ SSH ] targetip=%s username=%s password=%s\n", ip, user, pass)
 
 	status := check.Ssh(ip, user, pass)
 	updateCheckCount(service, status)
@@ -161,7 +161,7 @@ func (ping PingService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	ip := (*service).HostIP
-	fmt.Printf("pinging %s\n", ip)
+	fmt.Printf("[ ping ] targetip=%s\n", ip)
 
 	status := check.Ping(ip)
 	updateCheckCount(service, status)
