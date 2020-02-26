@@ -89,8 +89,6 @@ func main() {
 	    dbutils.InitializeDatabase(db, game)
     }
 
-    fmt.Println(game)
-
 	scoreboardHTML = web.GenerateScoreboardHTML(teams)
 
 	// Spin off separate thread for the web server so as not to block main

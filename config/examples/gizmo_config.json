@@ -30,13 +30,13 @@
                 "ServiceType": {
                     "Type": "dns",
                     "ServiceCheck": {
-                        "DomainName": "team1.local"
+                        "DomainName": "google.com"
                     }
                 },
                 "ServiceCheck": {
-                    "DomainName": "team1.local"
+                    "DomainName": "google.com"
                 },
-                "HostIP": "192.168.56.101",
+                "HostIP": "1.1.1.1",
                 "TeamID": 1,
                 "ChecksMissed": 0,
                 "ChecksHit": 0,

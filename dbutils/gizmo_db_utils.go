@@ -79,6 +79,23 @@ func createStatusTable(db *sql.DB) {
 	return
 }
 
+func insertNewService(db *sql.DB, service structs.Service) {
+    sqlStatement := `SELECT MAX(ServiceID) FROM Service`
+
+    row := db.QueryRow(sqlStatement)
+    var lastServiceID int
+
+    switch err := row.Scan(&lastServiceID); err {
+    case sql.ErrNoRows:
+        fmt.Println("insertNewService: No rows returned")
+    case nil: // success!
+        initializeService(db, service, lastServiceID + 1)
+    default:
+        panic(err)
+    }
+
+}
+
 func initializeService(db *sql.DB, service structs.Service, serviceID int) {
 	tx, err := db.Begin()
 	if err != nil {
@@ -339,7 +356,7 @@ func countTablesFromSQLMaster(db *sql.DB) int64 {
 
     switch err := row.Scan(&count); err {
     case sql.ErrNoRows:
-        fmt.Println("No rows returned")
+        fmt.Println("countTablesFromSQLMaster: No rows returned")
     case nil: // success!
         return count
     default:
@@ -380,7 +397,7 @@ func UpdateGameFromDatabase(db *sql.DB, game *structs.Game) {
 
     switch err := row.Scan(&game.GameID, &unix_time); err {
     case sql.ErrNoRows:
-        fmt.Println("No rows returned")
+        fmt.Println("UpdateGameFromDatabase: No rows returned")
     case nil: // success!
         game.StartTime = time.Unix(unix_time, 0)
     default:
@@ -396,7 +413,7 @@ func LoadTeamChecksFromDatabase(db *sql.DB, team *structs.Team) {
     var totalChecksAttempted int
     switch err := row.Scan(&totalChecksMissed, &totalChecksAttempted); err {
     case sql.ErrNoRows:
-        fmt.Println("No rows returned")
+        fmt.Println("LoadTeamChecksFromDatabase: No rows returned")
     case nil: // success!
         team.TotalChecksMissed = uint(totalChecksMissed)
         team.TotalChecksHit = uint(totalChecksAttempted) - uint(totalChecksMissed)
@@ -414,7 +431,8 @@ func LoadServiceFromDatabase(db *sql.DB, service *structs.Service) {
     var checksAttempted int
     switch err := row.Scan(&serviceID, &checksMissed, &checksAttempted); err {
     case sql.ErrNoRows:
-        fmt.Println("No rows returned")
+        fmt.Println("LoadServiceFromDatabase: No rows returned")
+        insertNewService(db, *service)
     case nil: // success!
         service.ServiceID = serviceID
         service.ChecksAttempted = uint(checksAttempted)
