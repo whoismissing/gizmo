@@ -72,13 +72,24 @@ func ConcurrentServiceCheck(servicesPtr *[]structs.Service) {
 func main() {
 	confName, dbName := parseArgs(argparse.NewParser("gizmo", "Service uptime scoreboard"))
 
+    // TODO: Check if specified config / database files exist
+
 	db, _ := sql.Open("sqlite3", dbName)
-	dbutils.CreateDatabase(db)
 
 	teams := config.LoadConfig(confName)
 	game := structs.NewGame(teams)
 
-	dbutils.InitializeDatabase(db, game)
+    if dbutils.DoesDatabaseExist(db) {
+        fmt.Println("[+] Database already exists - loading")
+        dbutils.UpdateGameFromDatabase(db, &game)
+        dbutils.LoadGameFromDatabase(db, &game)
+    } else {
+        fmt.Println("[+] Database is empty - creating and initializing")
+	    dbutils.CreateDatabase(db)
+	    dbutils.InitializeDatabase(db, game)
+    }
+
+    fmt.Println(game)
 
 	scoreboardHTML = web.GenerateScoreboardHTML(teams)
 

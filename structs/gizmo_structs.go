@@ -103,10 +103,12 @@ func UpdateTeamCheckCount(team *Team) {
 	services := (*team).Services
 	for i := 0; i < len(services); i++ {
 		service := services[i]
-
-		(*team).TotalChecksHit += service.ChecksHit
-		(*team).TotalChecksMissed += service.ChecksMissed
-		(*team).TotalChecksAttempted += service.ChecksAttempted
+        if (service.Status) {
+            (*team).TotalChecksHit += 1
+        } else {
+		    (*team).TotalChecksMissed += 1
+        }
+		(*team).TotalChecksAttempted += 1
 	}
 }
 
