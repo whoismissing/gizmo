@@ -6,16 +6,13 @@
         "TotalChecksAttempted": 0,
         "Services": [
             {
-                "Name": "",
+                "Name": "web1",
                 "Status": false,
                 "ServiceType": {
                     "Type": "www",
                     "ServiceCheck": {
                         "URL": "team1.local"
                     }
-                },
-                "ServiceCheck": {
-                    "URL": "team1.local"
                 },
                 "HostIP": "192.168.56.100",
                 "TeamID": 1,
@@ -25,18 +22,15 @@
                 "PrevStatuses": null
             },
             {
-                "Name": "",
+                "Name": "dns1",
                 "Status": false,
                 "ServiceType": {
                     "Type": "dns",
                     "ServiceCheck": {
-                        "DomainName": "team1.local"
+                        "DomainName": "google.com"
                     }
                 },
-                "ServiceCheck": {
-                    "DomainName": "team1.local"
-                },
-                "HostIP": "192.168.56.101",
+                "HostIP": "1.1.1.1",
                 "TeamID": 1,
                 "ChecksMissed": 0,
                 "ChecksHit": 0,
@@ -44,7 +38,7 @@
                 "PrevStatuses": null
             },
             {
-                "Name": "",
+                "Name": "ftp1",
                 "Status": false,
                 "ServiceType": {
                     "Type": "ftp",
@@ -52,10 +46,6 @@
                         "Username": "anonymous",
                         "Password": ""
                     }
-                },
-                "ServiceCheck": {
-                    "Username": "anonymous",
-                    "Password": ""
                 },
                 "HostIP": "192.168.56.102",
                 "TeamID": 1,
@@ -75,11 +65,6 @@
                         "Command": "ls"
                     }
                 },
-                "ServiceCheck": {
-                    "Username": "ccdc",
-                    "Password": "changeme",
-                    "Command": "ls"
-                },
                 "HostIP": "192.168.56.103",
                 "TeamID": 1,
                 "ChecksMissed": 0,
@@ -88,7 +73,7 @@
                 "PrevStatuses": null
             },
             {
-                "Name": "",
+                "Name": "ping1",
                 "Status": false,
                 "ServiceType": {
                     "Type": "ping",
@@ -96,11 +81,48 @@
                         
                     }
                 },
-                "ServiceCheck": {
-                    
-                },
                 "HostIP": "8.8.8.8",
                 "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            },
+            {
+                "Name": "custom1",
+                "Status": false,
+                "ServiceType": {
+                    "Type": "ext",
+                    "ServiceCheck": {
+                        "ScriptPath": "curl"
+                    }
+                },
+                "HostIP": "127.0.0.1",
+                "TeamID": 1,
+                "ChecksMissed": 0,
+                "ChecksHit": 0,
+                "ChecksAttempted": 0,
+                "PrevStatuses": null
+            }
+        ]
+    },
+    {
+        "TeamID": 2,
+        "TotalChecksMissed": 0,
+        "TotalChecksHit": 0,
+        "TotalChecksAttempted": 0,
+        "Services": [
+            {
+                "Name": "web2",
+                "Status": false,
+                "ServiceType": {
+                    "Type": "www",
+                    "ServiceCheck": {
+                        "URL": "team1.local"
+                    }
+                },
+                "HostIP": "192.168.56.100",
+                "TeamID": 2,
                 "ChecksMissed": 0,
                 "ChecksHit": 0,
                 "ChecksAttempted": 0,

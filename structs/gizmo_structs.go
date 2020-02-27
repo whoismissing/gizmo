@@ -79,6 +79,10 @@ type PingService struct {
 
 }
 
+type ExternalService struct {
+    ScriptPath string
+}
+
 func updateCheckCount(service *Service, status bool) {
 	if status == true {
 		(*service).ChecksHit += 1
@@ -103,10 +107,12 @@ func UpdateTeamCheckCount(team *Team) {
 	services := (*team).Services
 	for i := 0; i < len(services); i++ {
 		service := services[i]
-
-		(*team).TotalChecksHit += service.ChecksHit
-		(*team).TotalChecksMissed += service.ChecksMissed
-		(*team).TotalChecksAttempted += service.ChecksAttempted
+        if (service.Status) {
+            (*team).TotalChecksHit += 1
+        } else {
+		    (*team).TotalChecksMissed += 1
+        }
+		(*team).TotalChecksAttempted += 1
 	}
 }
 
@@ -167,6 +173,18 @@ func (ping PingService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	updateCheckCount(service, status)
 }
 
+
+func (ext ExternalService) CheckHealth(service *Service, wg *sync.WaitGroup) {
+    defer wg.Done()
+
+    ip := (*service).HostIP
+    filepath := ext.ScriptPath
+    fmt.Printf("[ EXT ] targetip=%s filepath=%s\n", ip, filepath)
+
+    status := check.External(ip, filepath)
+    updateCheckCount(service, status)
+}
+
 /*
 This function is used to unmarshal the 
 specified ServiceCheck object type
@@ -195,7 +213,12 @@ func LoadFromServiceType(serviceType ServiceType) ServiceCheck {
 		var ping PingService
 		_ = json.Unmarshal(data, &ping)
 		return ping
+    case "ext":
+        var ext ExternalService
+        _ = json.Unmarshal(data, &ext)
+        return ext
 	case "default":
+        fmt.Println("LoadFromServiceType: unrecognized ServiceType")
 		return nil
 	}
 

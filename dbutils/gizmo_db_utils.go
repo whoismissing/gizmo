@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"log"
 	"time"
+    "fmt"
 )
 
 func createGameTable(db *sql.DB) {
@@ -76,6 +77,40 @@ func createStatusTable(db *sql.DB) {
 	}
 
 	return
+}
+
+func insertNewTeam(db *sql.DB, team structs.Team) {
+    sqlStatement := `SELECT GameID FROM GAME`
+
+    row := db.QueryRow(sqlStatement)
+    var gameID int
+
+    switch err := row.Scan(&gameID); err {
+    case sql.ErrNoRows:
+        fmt.Println("insertNewTeam: No rows returned")
+    case nil: // success!
+        initializeTeam(db, team, gameID)
+    default:
+        panic(err)
+    }
+
+}
+
+func insertNewService(db *sql.DB, service structs.Service) {
+    sqlStatement := `SELECT MAX(ServiceID) FROM Service`
+
+    row := db.QueryRow(sqlStatement)
+    var lastServiceID int
+
+    switch err := row.Scan(&lastServiceID); err {
+    case sql.ErrNoRows:
+        fmt.Println("insertNewService: No rows returned")
+    case nil: // success!
+        initializeService(db, service, lastServiceID + 1)
+    default:
+        panic(err)
+    }
+
 }
 
 func initializeService(db *sql.DB, service structs.Service, serviceID int) {
@@ -331,6 +366,23 @@ func updateTeams(db *sql.DB, teams []structs.Team) {
 	}
 }
 
+func countTablesFromSQLMaster(db *sql.DB) int64 {
+    sqlStatement := `SELECT COUNT(*) FROM sqlite_master`
+    row := db.QueryRow(sqlStatement)
+    var count int64
+
+    switch err := row.Scan(&count); err {
+    case sql.ErrNoRows:
+        fmt.Println("countTablesFromSQLMaster: No rows returned")
+    case nil: // success!
+        return count
+    default:
+        panic(err)
+    }
+
+    return -1
+}
+
 func CreateDatabase(db *sql.DB) {
 	createGameTable(db)
 	createTeamTable(db)
@@ -345,4 +397,74 @@ func InitializeDatabase(db *sql.DB, game structs.Game) {
 func UpdateDatabase(db *sql.DB, game structs.Game) {
 	updateGameTable(db, game)
 	updateTeams(db, game.Teams)
+}
+
+func DoesDatabaseExist(db *sql.DB) bool {
+    if countTablesFromSQLMaster(db) < 4 {
+        return false
+    }
+    return true
+}
+
+func UpdateGameFromDatabase(db *sql.DB, game *structs.Game) {
+    sqlStatement := `SELECT GameID, GameStartTime FROM Game`
+
+    row := db.QueryRow(sqlStatement)
+    var unix_time int64
+
+    switch err := row.Scan(&game.GameID, &unix_time); err {
+    case sql.ErrNoRows:
+        fmt.Println("UpdateGameFromDatabase: No rows returned")
+    case nil: // success!
+        game.StartTime = time.Unix(unix_time, 0)
+    default:
+        panic(err)
+    }
+}
+
+func LoadTeamChecksFromDatabase(db *sql.DB, team *structs.Team) {
+    sqlStatement := "SELECT TotalMissedChecks, TotalChecks FROM Team WHERE TeamID=?"
+    row := db.QueryRow(sqlStatement, team.TeamID)
+
+    var totalChecksMissed int
+    var totalChecksAttempted int
+    switch err := row.Scan(&totalChecksMissed, &totalChecksAttempted); err {
+    case sql.ErrNoRows:
+        fmt.Println("LoadTeamChecksFromDatabase: No rows returned")
+        insertNewTeam(db, *team)
+    case nil: // success!
+        team.TotalChecksMissed = uint(totalChecksMissed)
+        team.TotalChecksHit = uint(totalChecksAttempted) - uint(totalChecksMissed)
+        team.TotalChecksAttempted = uint(totalChecksAttempted)
+    default:
+    }
+}
+
+func LoadServiceFromDatabase(db *sql.DB, service *structs.Service) {
+    sqlStatement := "SELECT ServiceID, NumberOfMissedChecks, NumberOfChecks FROM Service WHERE Name=?"
+    row := db.QueryRow(sqlStatement, service.Name)
+
+    var serviceID int
+    var checksMissed int
+    var checksAttempted int
+    switch err := row.Scan(&serviceID, &checksMissed, &checksAttempted); err {
+    case sql.ErrNoRows:
+        fmt.Println("LoadServiceFromDatabase: No rows returned")
+        insertNewService(db, *service)
+    case nil: // success!
+        service.ServiceID = serviceID
+        service.ChecksAttempted = uint(checksAttempted)
+        service.ChecksMissed = uint(checksMissed)
+        service.ChecksHit = uint(checksAttempted) - uint(checksMissed)
+    default:
+    }
+}
+
+func LoadGameFromDatabase(db *sql.DB, game *structs.Game) {
+    for i := 0; i < len(game.Teams); i++ {
+        LoadTeamChecksFromDatabase(db, &game.Teams[i])
+        for j := 0; j < len(game.Teams[i].Services); j++ {
+            LoadServiceFromDatabase(db, &game.Teams[i].Services[j])
+        }
+    }
 }
