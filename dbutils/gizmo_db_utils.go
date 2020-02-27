@@ -79,6 +79,23 @@ func createStatusTable(db *sql.DB) {
 	return
 }
 
+func insertNewTeam(db *sql.DB, team structs.Team) {
+    sqlStatement := `SELECT GameID FROM GAME`
+
+    row := db.QueryRow(sqlStatement)
+    var gameID int
+
+    switch err := row.Scan(&gameID); err {
+    case sql.ErrNoRows:
+        fmt.Println("insertNewTeam: No rows returned")
+    case nil: // success!
+        initializeTeam(db, team, gameID)
+    default:
+        panic(err)
+    }
+
+}
+
 func insertNewService(db *sql.DB, service structs.Service) {
     sqlStatement := `SELECT MAX(ServiceID) FROM Service`
 
@@ -414,6 +431,7 @@ func LoadTeamChecksFromDatabase(db *sql.DB, team *structs.Team) {
     switch err := row.Scan(&totalChecksMissed, &totalChecksAttempted); err {
     case sql.ErrNoRows:
         fmt.Println("LoadTeamChecksFromDatabase: No rows returned")
+        insertNewTeam(db, *team)
     case nil: // success!
         team.TotalChecksMissed = uint(totalChecksMissed)
         team.TotalChecksHit = uint(totalChecksAttempted) - uint(totalChecksMissed)
