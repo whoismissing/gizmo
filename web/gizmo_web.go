@@ -10,9 +10,18 @@ func GenerateScoreboardHTML(teams []structs.Team) string {
 	html := `<!DOCTYPE html> 
 <html> 
 <head>
-<meta http-equiv="refresh" content="5" />
+<script>
+function countdown(remaining) {
+    if(remaining <= 0)
+        location.reload(true);
+    document.getElementById('countdown').innerHTML = "Refreshing in " + remaining;
+    setTimeout(function(){ countdown(remaining - 1); }, 1000);
+};
+</script>
+<!--<meta http-equiv="refresh" content="5" />-->
 </head>
-<body> 
+<body onload="countdown(5)">
+<div id="countdown"></div>
 <table style="width:100%"> 
 <tr> 
 <th>Team</th>
@@ -56,5 +65,4 @@ func GenerateScoreboardHTML(teams []structs.Team) string {
 	html += "</body>\n"
 	html += "</html>\n"
 
-	return html
-}
+	return html }
