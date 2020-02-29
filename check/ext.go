@@ -22,7 +22,8 @@ func External(ip string, filepath string) bool {
 	cmd := exec.Command(filepath, ip)
 
     if err := cmd.Start(); err != nil {
-        log.Fatalf("cmd.Start: %v", err)
+        log.Printf("cmd.Start: %v", err)
+        return false
     }
 
     if err := cmd.Wait(); err != nil {

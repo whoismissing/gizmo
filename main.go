@@ -9,9 +9,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"database/sql"
+    "encoding/json"
     "net"
 	"net/http"
 	"os"
+    "path/filepath"
 	"fmt"
 	"log"
 	"time"
@@ -21,11 +23,13 @@ import (
 
 var scoreboardHTML string
 
-func parseArgs(parser *argparse.Parser) (string, string) {
+func parseArgs(parser *argparse.Parser) (string, string, string) {
 	conf := parser.String("i", "input", &argparse.Options{Required: true, Help: "Input config filename"})
 
 	defaultFilename := "gizmo.db"
 	dbName := parser.String("o", "output", &argparse.Options{Required: false, Default: defaultFilename, Help: "Output database filename"})
+
+	scriptDir := parser.String("s", "script_directory", &argparse.Options{Required: false, Default: "", Help: "Script directory"})
 
 	err := parser.Parse(os.Args)
 	if err != nil {
@@ -33,7 +37,63 @@ func parseArgs(parser *argparse.Parser) (string, string) {
 		os.Exit(1)
 	}
 
-	return *conf, *dbName
+	return *conf, *dbName, *scriptDir
+}
+
+// shamelessly ripped from https://golangcode.com/check-if-a-file-exists/
+func fileExists(filename string) bool {
+    info, err := os.Stat(filename)
+    if os.IsNotExist(err) {
+        return false
+    }
+    return !info.IsDir()
+}
+
+func isServiceAlreadyInList(team structs.Team, service structs.Service) bool {
+    for i := 0; i < len(team.Services); i++ {
+        if service.Name == team.Services[i].Name {
+            return true
+        }
+    }
+    return false
+}
+
+func addScriptServicesToTeam(db *sql.DB, directory string, team *structs.Team) {
+    /* list all files (recursively) in the script directory */
+    err := filepath.Walk(directory,
+        func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+        if fileExists(path) {
+            // TODO: Check for service in database
+            // TODO: Insert into database if service does NOT exist
+            ext := structs.ExternalService{ ScriptPath: path }
+            extJson, _ := json.Marshal(ext)
+            extServiceType := structs.ServiceType{"ext", extJson}
+
+            service := structs.NewService(path, (*team).TeamID)
+            serviceCheck := structs.LoadFromServiceType(extServiceType)
+            service.ServiceType = extServiceType
+            service.ServiceCheck = serviceCheck
+            dbutils.LoadServiceFromDatabase(db, &service)
+            // TODO: Add Service to all teams
+            if !isServiceAlreadyInList(*team, service) {
+                (*team).Services = append((*team).Services, service)
+                fmt.Println("[+] team ", (*team).TeamID, "loaded new script: ", path)
+            }
+        }
+        return nil
+    })
+    if err != nil {
+        log.Println(err)
+    }
+}
+
+func addScriptServicesToTeams(db *sql.DB, directory string, teams *[]structs.Team) {
+    for i := 0; i < len(*teams); i++ {
+        addScriptServicesToTeam(db, directory, &(*teams)[i])
+    }
 }
 
 // GetLocalIP returns the non loopback local IP of the host
@@ -70,13 +130,27 @@ func ConcurrentServiceCheck(servicesPtr *[]structs.Service) {
 }
 
 func main() {
-	confName, dbName := parseArgs(argparse.NewParser("gizmo", "Service uptime scoreboard"))
+	confName, dbName, scriptDir := parseArgs(argparse.NewParser("gizmo", "Service uptime scoreboard"))
 
     // TODO: Check if specified config / database files exist
+    if !fileExists(confName) {
+        fmt.Println("[!] Configuration file: ", confName, "does not exist!")
+        os.Exit(1)
+    }
 
 	db, _ := sql.Open("sqlite3", dbName)
 
 	teams := config.LoadConfig(confName)
+
+    if scriptDir != "" {
+        if _, err := os.Stat(scriptDir); !os.IsNotExist(err) {
+            addScriptServicesToTeams(db, scriptDir, &teams)
+        } else {
+            fmt.Println("[!] Script directory: ", scriptDir, "does not exist!")
+            os.Exit(1)
+        }
+    }
+
 	game := structs.NewGame(teams)
 
     if dbutils.DoesDatabaseExist(db) {
@@ -109,6 +183,7 @@ func main() {
 		for i := 0; i < len(teams); i++ {
 			team := teams[i]
 
+            addScriptServicesToTeam(db, scriptDir, &teams[i])
 			ConcurrentServiceCheck(&team.Services)
 			scoreboardHTML = web.GenerateScoreboardHTML(teams)
 

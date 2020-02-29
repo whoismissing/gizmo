@@ -120,7 +120,7 @@ func (www WebService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	ip := (*service).HostIP
-	fmt.Printf("[ WWW ] targetip=%s\n", ip)
+	fmt.Printf("[ WWW ] teamid=%d targetip=%s\n", (*service).TeamID, ip)
 
 	status := check.Web(ip)
 	updateCheckCount(service, status)
@@ -131,7 +131,7 @@ func (dns DomainNameService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 
 	ip := (*service).HostIP
 	record := dns.DomainName
-	fmt.Printf("[ DNS ] targetip=%s record=%s\n", ip, record)
+	fmt.Printf("[ DNS ] teamid=%d targetip=%s record=%s\n", (*service).TeamID, ip, record)
 
 	status := check.Dns(ip, record)
 	updateCheckCount(service, status)
@@ -145,7 +145,7 @@ func (ftp FileTransferService) CheckHealth(service *Service, wg *sync.WaitGroup)
 	pass := ftp.Password
 	// TODO: obtain FTP filename from JSON config
 	filename := "hello.txt"
-	fmt.Printf("[ FTP ] targetip=%s filename=%s username=%s password=%s\n", ip, filename, user, pass)
+	fmt.Printf("[ FTP ] teamid=%d targetip=%s filename=%s username=%s password=%s\n", (*service).TeamID, ip, filename, user, pass)
 
 	status := check.Ftp(ip, user, pass, filename)
 	updateCheckCount(service, status)
@@ -157,7 +157,7 @@ func (ssh SecureShellService) CheckHealth(service *Service, wg *sync.WaitGroup) 
 	ip := (*service).HostIP
 	user := ssh.Username
 	pass := ssh.Password
-	fmt.Printf("[ SSH ] targetip=%s username=%s password=%s\n", ip, user, pass)
+	fmt.Printf("[ SSH ] teamid=%d targetip=%s username=%s password=%s\n", (*service).TeamID, ip, user, pass)
 
 	status := check.Ssh(ip, user, pass)
 	updateCheckCount(service, status)
@@ -167,7 +167,7 @@ func (ping PingService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	ip := (*service).HostIP
-	fmt.Printf("[ ping ] targetip=%s\n", ip)
+	fmt.Printf("[ ping ] teamid=%d targetip=%s\n", (*service).TeamID, ip)
 
 	status := check.Ping(ip)
 	updateCheckCount(service, status)
@@ -179,7 +179,7 @@ func (ext ExternalService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 
     ip := (*service).HostIP
     filepath := ext.ScriptPath
-    fmt.Printf("[ EXT ] targetip=%s filepath=%s\n", ip, filepath)
+    fmt.Printf("[ EXT ] teamid=%d targetip=%s filepath=%s\n", (*service).TeamID, ip, filepath)
 
     status := check.External(ip, filepath)
     updateCheckCount(service, status)
