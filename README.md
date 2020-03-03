@@ -9,14 +9,16 @@ Service checker and scoreboard for CCDC-like exercises.
 
 ```
 usage: gizmo [-h|--help] -i|--input "<value>" [-o|--output "<value>"]
+             [-s|--script_directory "<value>"]
 
              Service uptime scoreboard
 
 Arguments:
 
-  -h  --help    Print help information
-  -i  --input   Input config filename
-  -o  --output  Output database filename. Default: gizmo.db
+  -h  --help              Print help information
+  -i  --input             Input config filename
+  -o  --output            Output database filename. Default: gizmo.db
+  -s  --script_directory  Script directory. Default: 
 
 ```
 
@@ -33,7 +35,7 @@ go get -u -v github.com/akamensky/argparse
 go get -u -v github.com/jlaffaye/ftp
 go get -u -v github.com/mattn/go-sqlite3
 go get -u -v golang.org/x/crypto/ssh
-go get -u github.com/whoismissing/gizmo
+go get -u -v github.com/whoismissing/gizmo
 go build
 ```
 

@@ -1,10 +1,10 @@
 package check
 
 import (
-	"net"
+    "net"
 )
 
 func Dns(ip string, record string) bool {
-	foundIP, err := net.LookupIP(record)
-	return (err == nil && ip == foundIP[0].String())
+    foundIP, err := net.LookupIP(record)
+    return (err == nil && ip == foundIP[0].String())
 }

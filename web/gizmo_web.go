@@ -6,6 +6,11 @@ import (
 	"strconv"
 )
 
+/*
+Given the array of teams, generate the corresponding HTML to show service statuses
+
+Note: Highly likely to contain XSS
+*/
 func GenerateScoreboardHTML(teams []structs.Team) string {
 	html := `<!DOCTYPE html> 
 <html> 

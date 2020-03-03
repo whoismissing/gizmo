@@ -8,6 +8,10 @@ import (
 	"fmt"
 )
 
+/*
+Load the service checks whose type information were lost
+from the JSON config
+*/
 func LoadServiceChecks(services []structs.Service) {
 	for i := 0; i < len(services); i++ {
 		serviceType := services[i].ServiceType
@@ -19,6 +23,10 @@ func LoadServiceChecks(services []structs.Service) {
 	}
 }
 
+/*
+Load the teams and their corresponding services from the 
+raw config data
+*/
 func LoadTeams(config []byte) []structs.Team {
 	var teams []structs.Team
 	_ = json.Unmarshal(config, &teams)
@@ -31,6 +39,10 @@ func LoadTeams(config []byte) []structs.Team {
 	return teams
 }
 
+/*
+Given a specified JSON config filename, load the teams array
+with the structs by unmarshalling from JSON
+*/
 func LoadConfig(filename string) []structs.Team {
 	config, err := ioutil.ReadFile(filename)
 	if err != nil {

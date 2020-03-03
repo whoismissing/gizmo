@@ -1,7 +1,8 @@
 package check
 
 import (
-	"os/exec"
+    "os/exec"
+
     "log"
     "syscall"
 )
@@ -19,7 +20,7 @@ echo $?
 
 */
 func External(ip string, filepath string) bool {
-	cmd := exec.Command(filepath, ip)
+    cmd := exec.Command(filepath, ip)
 
     if err := cmd.Start(); err != nil {
         log.Printf("cmd.Start: %v", err)
