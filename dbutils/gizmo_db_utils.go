@@ -48,7 +48,7 @@ func createServiceTable(db *sql.DB) {
 	CREATE TABLE IF NOT EXISTS "Service" (
 		"Name"	TEXT NOT NULL,
 		"TeamID"	INTEGER,
-		"ServiceID"	INTEGER PRIMARY KEY AUTOINCREMENT,
+		"ServiceID"	INTEGER AUTO_INCREMENT,
 		"HostIP"	TEXT,
 		"NumberOfMissedChecks"	INTEGER,
 		"NumberOfChecks"	INTEGER
@@ -66,6 +66,7 @@ func createStatusTable(db *sql.DB) {
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Status" (
 		"ServiceID"	INTEGER,
+        "TeamID" INTEGER,
 		"StatusID"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 		"Time"	INTEGER,
 		"State"	TEXT
@@ -293,15 +294,17 @@ func updateStatusTable(db *sql.DB, service structs.Service) {
 	stmt, err := tx.Prepare(`
 	INSERT INTO "Status" (
 		"ServiceID",
+        "TeamID",
 		"Time",
 		"State"
-	) VALUES ( ?, ?, ?);
+	) VALUES ( ?, ?, ?, ?);
 	`)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	serviceID := service.ServiceID
+    teamID := service.TeamID
 	top := len(service.PrevStatuses) - 1
 
 	/* if service.PrevStatuses is empty */
@@ -310,7 +313,7 @@ func updateStatusTable(db *sql.DB, service structs.Service) {
 	}
 
 	status := service.PrevStatuses[top]
-	_, err = stmt.Exec(serviceID, status.Time, status.Status)
+	_, err = stmt.Exec(serviceID, teamID, status.Time, status.Status)
 	if err != nil {
 		log.Fatal(err)
 	}
