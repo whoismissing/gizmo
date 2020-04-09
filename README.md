@@ -9,6 +9,7 @@ Service checker and scoreboard for CCDC-like exercises.
 
 ```
 usage: gizmo [-h|--help] -i|--input "<value>" [-o|--output "<value>"]
+             [-d|--debug]
 
              Service uptime scoreboard
 
@@ -17,6 +18,7 @@ Arguments:
   -h  --help    Print help information
   -i  --input   Input config filename
   -o  --output  Output database filename. Default: gizmo.db
+  -d  --debug   Permit debug logging. Default: false
 
 ```
 
