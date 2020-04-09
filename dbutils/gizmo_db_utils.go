@@ -2,6 +2,7 @@ package dbutils
 
 import (
 	structs "github.com/whoismissing/gizmo/structs"
+    debug "github.com/whoismissing/gizmo/debug"
 	_ "github.com/mattn/go-sqlite3"
 
 	"database/sql"
@@ -11,6 +12,7 @@ import (
 )
 
 func createGameTable(db *sql.DB) {
+    debug.LogBegin()
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Game" (
 		"GameStartTime"		INTEGER,
@@ -23,10 +25,12 @@ func createGameTable(db *sql.DB) {
 		log.Fatal(err)
 	}
 
+    debug.LogEnd()
 	return
 }
 
 func createTeamTable(db *sql.DB) {
+    debug.LogBegin()
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Team" (
 		"GameID"	INTEGER,
@@ -40,10 +44,12 @@ func createTeamTable(db *sql.DB) {
 		log.Fatal(err)
 	}
 
+    debug.LogEnd()
 	return
 }
 
 func createServiceTable(db *sql.DB) {
+    debug.LogBegin()
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Service" (
 		"Name"	TEXT NOT NULL,
@@ -59,10 +65,12 @@ func createServiceTable(db *sql.DB) {
 		log.Fatal(err)
 	}
 
+    debug.LogEnd()
 	return
 }
 
 func createStatusTable(db *sql.DB) {
+    debug.LogBegin()
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Status" (
 		"ServiceID"	INTEGER,
@@ -77,10 +85,12 @@ func createStatusTable(db *sql.DB) {
 		log.Fatal(err)
 	}
 
+    debug.LogEnd()
 	return
 }
 
 func insertNewTeam(db *sql.DB, team structs.Team) {
+    debug.LogBegin()
     sqlStatement := `SELECT GameID FROM GAME`
 
     row := db.QueryRow(sqlStatement)
@@ -95,9 +105,11 @@ func insertNewTeam(db *sql.DB, team structs.Team) {
         panic(err)
     }
 
+    debug.LogEnd()
 }
 
 func insertNewService(db *sql.DB, service structs.Service) {
+    debug.LogBegin()
     sqlStatement := `SELECT MAX(ServiceID) FROM Service`
 
     row := db.QueryRow(sqlStatement)
@@ -112,9 +124,11 @@ func insertNewService(db *sql.DB, service structs.Service) {
         panic(err)
     }
 
+    debug.LogEnd()
 }
 
 func initializeService(db *sql.DB, service structs.Service, serviceID int) {
+    debug.LogBegin()
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -147,20 +161,25 @@ func initializeService(db *sql.DB, service structs.Service, serviceID int) {
 	_ = tx.Commit()
 	stmt.Close()
 
+    debug.LogEnd()
 	return
 }
 
 func initializeServices(db *sql.DB, services []structs.Service) {
+    debug.LogBegin()
 
 	for i := 0; i < len(services); i++ {
 		services[i].ServiceID = i
 		initializeService(db, services[i], i)
 	}
 
+    debug.LogEnd()
 	return
 }
 
 func initializeTeam(db *sql.DB, team structs.Team, gameID int) {
+    debug.LogBegin()
+
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -187,16 +206,23 @@ func initializeTeam(db *sql.DB, team structs.Team, gameID int) {
 	services := team.Services
 	initializeServices(db, services)
 
+    debug.LogEnd()
 	return
 }
 
 func initializeTeams(db *sql.DB, teams []structs.Team, gameID int) {
+    debug.LogBegin()
+
 	for i := 0; i < len(teams); i++ {
 		initializeTeam(db, teams[i], gameID)
 	}
+
+    debug.LogEnd()
 }
 
 func initializeGame(db *sql.DB, game structs.Game) {
+    debug.LogBegin()
+
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -226,10 +252,13 @@ func initializeGame(db *sql.DB, game structs.Game) {
 	teams := game.Teams
 	initializeTeams(db, teams, gameID)
 
+    debug.LogEnd()
 	return
 }
 
 func updateGameTable(db *sql.DB, game structs.Game) {
+    debug.LogBegin()
+
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -253,10 +282,13 @@ func updateGameTable(db *sql.DB, game structs.Game) {
 	_ = tx.Commit()
 	stmt.Close()
 
+    debug.LogEnd()
 	return
 }
 
 func updateServiceTable(db *sql.DB, service structs.Service) {
+    debug.LogBegin()
+
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -281,11 +313,14 @@ func updateServiceTable(db *sql.DB, service structs.Service) {
 	_ = tx.Commit()
 	stmt.Close()
 
+    debug.LogEnd()
 	return
 
 }
 
 func updateStatusTable(db *sql.DB, service structs.Service) {
+    debug.LogBegin()
+
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -321,19 +356,26 @@ func updateStatusTable(db *sql.DB, service structs.Service) {
 	_ = tx.Commit()
 	stmt.Close()
 
+    debug.LogEnd()
 	return
 
 }
 
 
 func updateServices(db *sql.DB, services []structs.Service) {
+    debug.LogBegin()
+
 	for i := 0; i < len(services); i++ {
 		updateServiceTable(db, services[i])
 		updateStatusTable(db, services[i])
 	}
+
+    debug.LogEnd()
 }
 
 func updateTeamTable(db *sql.DB, team structs.Team) {
+    debug.LogBegin()
+
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -359,17 +401,23 @@ func updateTeamTable(db *sql.DB, team structs.Team) {
 
 	updateServices(db, team.Services)
 
+    debug.LogEnd()
 	return
-
 }
 
 func updateTeams(db *sql.DB, teams []structs.Team) {
+    debug.LogBegin()
+
 	for i := 0; i < len(teams); i++ {
 		updateTeamTable(db, teams[i])
 	}
+
+    debug.LogEnd()
 }
 
 func countTablesFromSQLMaster(db *sql.DB) int64 {
+    debug.LogBegin()
+
     sqlStatement := `SELECT COUNT(*) FROM sqlite_master`
     row := db.QueryRow(sqlStatement)
     var count int64
@@ -378,38 +426,53 @@ func countTablesFromSQLMaster(db *sql.DB) int64 {
     case sql.ErrNoRows:
         fmt.Println("countTablesFromSQLMaster: No rows returned")
     case nil: // success!
+        debug.LogEnd()
         return count
     default:
         panic(err)
     }
 
+    debug.LogEnd()
     return -1
 }
 
 func CreateDatabase(db *sql.DB) {
+    debug.LogBegin()
+
 	createGameTable(db)
 	createTeamTable(db)
 	createServiceTable(db)
 	createStatusTable(db)
+
+    debug.LogEnd()
 }
 
 func InitializeDatabase(db *sql.DB, game structs.Game) {
+    debug.LogBegin()
 	initializeGame(db, game)
+    debug.LogEnd()
 }
 
 func UpdateDatabase(db *sql.DB, game structs.Game) {
+    debug.LogBegin()
 	updateGameTable(db, game)
 	updateTeams(db, game.Teams)
+    debug.LogEnd()
 }
 
 func DoesDatabaseExist(db *sql.DB) bool {
+    debug.LogBegin()
     if countTablesFromSQLMaster(db) < 4 {
+        debug.LogEnd()
         return false
     }
+    debug.LogEnd()
     return true
 }
 
 func UpdateGameFromDatabase(db *sql.DB, game *structs.Game) {
+    debug.LogBegin()
+
     sqlStatement := `SELECT GameID, GameStartTime FROM Game`
 
     row := db.QueryRow(sqlStatement)
@@ -423,9 +486,13 @@ func UpdateGameFromDatabase(db *sql.DB, game *structs.Game) {
     default:
         panic(err)
     }
+
+    debug.LogEnd()
 }
 
 func LoadTeamChecksFromDatabase(db *sql.DB, team *structs.Team) {
+    debug.LogBegin()
+
     sqlStatement := "SELECT TotalMissedChecks, TotalChecks FROM Team WHERE TeamID=?"
     row := db.QueryRow(sqlStatement, team.TeamID)
 
@@ -441,9 +508,13 @@ func LoadTeamChecksFromDatabase(db *sql.DB, team *structs.Team) {
         team.TotalChecksAttempted = uint(totalChecksAttempted)
     default:
     }
+
+    debug.LogEnd()
 }
 
 func LoadServiceFromDatabase(db *sql.DB, service *structs.Service) {
+    debug.LogBegin()
+
     sqlStatement := "SELECT ServiceID, NumberOfMissedChecks, NumberOfChecks FROM Service WHERE Name=?"
     row := db.QueryRow(sqlStatement, service.Name)
 
@@ -461,13 +532,19 @@ func LoadServiceFromDatabase(db *sql.DB, service *structs.Service) {
         service.ChecksHit = uint(checksAttempted) - uint(checksMissed)
     default:
     }
+
+    debug.LogEnd()
 }
 
 func LoadGameFromDatabase(db *sql.DB, game *structs.Game) {
+    debug.LogBegin()
+
     for i := 0; i < len(game.Teams); i++ {
         LoadTeamChecksFromDatabase(db, &game.Teams[i])
         for j := 0; j < len(game.Teams[i].Services); j++ {
             LoadServiceFromDatabase(db, &game.Teams[i].Services[j])
         }
     }
+
+    debug.LogEnd()
 }

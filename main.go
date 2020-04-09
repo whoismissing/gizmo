@@ -5,6 +5,8 @@ import (
 	config "github.com/whoismissing/gizmo/config"
 	structs "github.com/whoismissing/gizmo/structs"
 	web "github.com/whoismissing/gizmo/web"
+    debug "github.com/whoismissing/gizmo/debug"
+
 	"github.com/akamensky/argparse"
 	_ "github.com/mattn/go-sqlite3"
 
@@ -27,11 +29,18 @@ func parseArgs(parser *argparse.Parser) (string, string) {
 	defaultFilename := "gizmo.db"
 	dbName := parser.String("o", "output", &argparse.Options{Required: false, Default: defaultFilename, Help: "Output database filename"})
 
+    // dbg is type *bool
+    dbg := parser.Flag("d", "debug", &argparse.Options{Required: false, Default: false, Help: "Permit debug logging"})
+
 	err := parser.Parse(os.Args)
 	if err != nil {
 		fmt.Print(parser.Usage(err))
 		os.Exit(1)
 	}
+
+    if *dbg {
+        debug.Status = *dbg
+    }
 
 	return *conf, *dbName
 }
