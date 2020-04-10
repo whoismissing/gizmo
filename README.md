@@ -1,9 +1,34 @@
 # gizmo
 Service checker and scoreboard for CCDC-like exercises.
 
+Currently supports the following services in some fashion:
+* ftp
+* ssh
+* ping
+* http
+* dns
+* external - run an external binary or script
+
 # Scoreboard Example
 
 ![](scoreboard_example.png)
+
+# Installation
+
+```
+go get -u -v github.com/akamensky/argparse
+go get -u -v github.com/jlaffaye/ftp
+go get -u -v github.com/mattn/go-sqlite3
+go get -u -v golang.org/x/crypto/ssh
+go get -u github.com/whoismissing/gizmo
+
+cd ~/go/src/github.com/whoismissing/gizmo
+go build
+```
+
+# Tools
+
+[tools/confgen/](./tools/confgen) is a command-line tool to help users generate a config file for gizmo
 
 # Usage
 
@@ -22,22 +47,13 @@ Arguments:
 
 ```
 
+Generally the work flow is to use [confgen](./tools/confgen) to generate a JSON config file, then pass the config as the input for gizmo `./gizmo -i examle.config`. An sqlite3 database will be created storing all of the service checks which can be analyzed later.
+
 # Releases
 
-Static binaries can be located at [gizmo/releases/](https://github.com/whoismissing/gizmo/releases)
+Features of each release are recorded [here](https://github.com/whoismissing/gizmo/releases)
 
 An example JSON configuration file is located at [gizmo/config/examples/gizmo_config.json](https://github.com/whoismissing/gizmo/blob/master/config/examples/gizmo_config.json)
-
-# Installation
-
-```
-go get -u -v github.com/akamensky/argparse
-go get -u -v github.com/jlaffaye/ftp
-go get -u -v github.com/mattn/go-sqlite3
-go get -u -v golang.org/x/crypto/ssh
-go get -u github.com/whoismissing/gizmo
-go build
-```
 
 # Contribution
 

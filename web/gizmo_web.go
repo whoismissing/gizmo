@@ -1,3 +1,5 @@
+// Package web provides the method for generating the HTML code for gizmo given an array of
+// Team objects.
 package web
 
 import (
@@ -6,6 +8,9 @@ import (
 	"strconv"
 )
 
+// GenerateScoreboardHTML() naively concatenates HTML and generates the HTML tables
+// for each team and their corresponding services given an array of Team objects, returning
+// the HTML as a string.
 func GenerateScoreboardHTML(teams []structs.Team) string {
 	html := `<!DOCTYPE html> 
 <html> 

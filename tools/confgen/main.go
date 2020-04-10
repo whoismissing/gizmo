@@ -1,3 +1,6 @@
+// Tools/confgen provides the command-line tool to help users generate a JSON
+// configuration file for gizmo in a user-prompting fashion similar to the
+// adduser command.
 package main
 
 import (
@@ -19,6 +22,8 @@ func printUsage() {
    fmt.Println("Usage: ", os.Args[0], "config_filename")
 }
 
+// readIntFromUser() scans user input until a new-line char and returns
+// the user-provided int
 func readIntFromUser() int {
     var userInput int
     _, _ = fmt.Scanln(&userInput) // numItemsRead, err = fmt.Scanln()
@@ -26,6 +31,8 @@ func readIntFromUser() int {
     return userInput
 }
 
+// readStringFromUser() reads user input until a new-line char and returns
+// the user-provided string (including the new-line char)
 func readStringFromUser() string {
     reader := bufio.NewReader(os.Stdin)
     var userInput string
@@ -34,6 +41,8 @@ func readStringFromUser() string {
     return userInput
 }
 
+// getWebServiceType() prompts the user to enter a URL and returns the
+// newly-created web ServiceType object.
 func getWebServiceType() structs.ServiceType {
     var www structs.WebService
     fmt.Printf("\t\t\tEnter a URL: ")
@@ -47,6 +56,8 @@ func getWebServiceType() structs.ServiceType {
     return wwwServiceType
 }
 
+// getDnsServiceType() prompts the user to enter a domain name and returns the 
+// newly-created dns ServiceType object.
 func getDnsServiceType() structs.ServiceType {
     var dns structs.DomainNameService
     fmt.Printf("\t\t\tEnter a domain name: ")
@@ -60,6 +71,8 @@ func getDnsServiceType() structs.ServiceType {
     return dnsServiceType
 }
 
+// getFtpServiceType() prompts the user for a username and returns the newly-created
+// ftp ServiceType object.
 func getFtpServiceType() structs.ServiceType {
     var ftp structs.FileTransferService
     fmt.Printf("\t\t\tEnter a username: ")
@@ -73,6 +86,8 @@ func getFtpServiceType() structs.ServiceType {
     return ftpServiceType
 }
 
+// getSshServiceType() prompts the user for a username and password and returns the
+// newly-created ssh ServiceType object. 'ls' is used as the default command.
 func getSshServiceType() structs.ServiceType {
     var ssh structs.SecureShellService
 
@@ -83,7 +98,7 @@ func getSshServiceType() structs.ServiceType {
     fmt.Printf("\t\t\tEnter a password: ")
     password := readStringFromUser()
     password = strings.TrimSuffix(password, "\n")
-    ssh.Command = "ls"
+    ssh.Command = "ls" // TODO: allow the user to provide a custom command
     ssh.Username = username
     ssh.Password = password
 
@@ -93,6 +108,7 @@ func getSshServiceType() structs.ServiceType {
     return sshServiceType
 }
 
+// getPingServiceType() returns a ping ServiceType object.
 func getPingServiceType() structs.ServiceType {
     var ping structs.PingService
 
@@ -102,6 +118,8 @@ func getPingServiceType() structs.ServiceType {
     return pingServiceType
 }
 
+// getExternalServiceType() prompts the user for a program filepath and returns
+// the newly-created External ServiceType object.
 func getExternalServiceType() structs.ServiceType {
     var ext structs.ExternalService
     fmt.Printf("\t\t\tEnter a program filepath: ")
@@ -115,6 +133,9 @@ func getExternalServiceType() structs.ServiceType {
     return extServiceType
 }
 
+// getServiceTypeFromRaw() calls the corresponding ServiceType prompt to get further
+// user-provided information to obtain the ServiceType in question, given an initial
+// raw service type. The raw service types are: www, dns, ftp, ssh, ping, ext.
 func getServiceTypeFromRaw(rawType string) (structs.ServiceType, bool) {
     // uninitialized, doesn't matter what type
     var def structs.ServiceType
@@ -147,6 +168,8 @@ func getServiceTypeFromRaw(rawType string) (structs.ServiceType, bool) {
     return def, false
 }
 
+// verifyRawServiceType() trims the new-line from the user-provided input
+// and returns true for the supported options: www, dns, ftp, ssh, ping, ext.
 func verifyRawServiceType(rawType string) bool {
     retval := false
     rawType = strings.TrimSuffix(rawType, "\n")
@@ -172,6 +195,10 @@ func verifyRawServiceType(rawType string) bool {
     return retval
 }
 
+// readServiceTypeFromUser() prompts the user to provide a raw service type,
+// reprompting when the input is unrecognized. Returns an empty-string on exit with 'n',
+// otherwise returns the service type the user chose as a string.
+// Options are: www, dns, ext, ftp, ssh, ping.
 func readServiceTypeFromUser() string {
     for {
         fmt.Println("\tEnter the new value, no default option")
@@ -199,13 +226,12 @@ func readServiceTypeFromUser() string {
     return ""
 }
 
-/*
-Prompt user to add a service by providing:
-1. ServiceName
-2. HostIP
-3. ServiceType
-Depending on the type, additional information may be needed
-*/
+// addService() prompts the user to add a service by providing
+// 1. ServiceName
+// 2. HostIP
+// 3. ServiceType
+// Depending on the type, additional information is requested from
+// the user for the corresponding type chosen
 func addService(serviceID int, teamID int) {
     fmt.Printf("\tAdding service '%d' ...\n", serviceID)
 
@@ -245,6 +271,8 @@ func addService(serviceID int, teamID int) {
     teams[teamID].Services = append(teams[teamID].Services, newService)
 }
 
+// addServices() prompts the user to continuously add services
+// until they select 'n' for 'no'.
 func addServices(team structs.Team) {
     serviceID := 0
     for {
@@ -264,6 +292,8 @@ func addServices(team structs.Team) {
     } // end for
 }
 
+// addTeam() prompts the user to add a team to the config. Upon doing so,
+// the user will be prompted to add services to the corresponding team.
 func addTeam(teamID int) {
     fmt.Printf("Adding team '%d' ...\n", teamID)
     newTeam := structs.NewTeam(uint(teamID))
@@ -273,6 +303,8 @@ func addTeam(teamID int) {
     addServices(newTeam)
 }
 
+// addTeams() prompts the user to continuously add teams until 'n'
+// is selected for 'no'.
 func addTeams() {
     teamID := 0
     for {
@@ -291,11 +323,14 @@ func addTeams() {
     } // end for
 }
 
+// promptUser() is the entry point for prompting the user to the
+// addTeams() loop.
 func promptUser() {
     fmt.Println("Creating a new Game config ...")
     addTeams()
 }
 
+// writeToFile() simply writes all specified data to the specified filename
 func writeToFile(filename string, data string) {
     fd, err := os.Create(filename)
     if err != nil {
@@ -315,6 +350,12 @@ func writeToFile(filename string, data string) {
     }
 }
 
+// main() is the entrypoint of the program, the user is prompted
+// for information and the corresponding objects will be created.
+// Once the user prompts are finished, the final array of Team objects 
+// is marshalled to JSON and written to the user-specified filename
+// completing the creation of the JSON configuration file for usage
+// in gizmo.
 func main() {
 
     if len(os.Args) < 2 {
