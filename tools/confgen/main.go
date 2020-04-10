@@ -45,6 +45,8 @@ func readStringFromUser() string {
 // newly-created web ServiceType object.
 func getWebServiceType() structs.ServiceType {
     var www structs.WebService
+    fmt.Println("\t\t\tURLs must be prepended with http:// or https://")
+    fmt.Println("\t\t\tExample: http://example.com")
     fmt.Printf("\t\t\tEnter a URL: ")
     url := readStringFromUser()
     url = strings.TrimSuffix(url, "\n")

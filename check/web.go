@@ -5,8 +5,19 @@ import (
 	"time"
 )
 
-func Web(ip string) bool {
+// Web() makes a GET request to a url in the formats:
+// http://exampleone.com, https://exampletwo.com
+// http://192.168.1.1
+func Web(url string) bool {
 	httpClient := &http.Client{Timeout: time.Second}
-	_, err := httpClient.Get(ip)
-	return (err == nil)
+	_, err := httpClient.Get(url)
+
+    var status bool
+    if err != nil {
+        status = false
+    } else {
+        status = true
+    }
+
+    return status
 }

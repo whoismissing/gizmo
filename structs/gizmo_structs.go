@@ -161,7 +161,16 @@ func (www WebService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	ip := (*service).HostIP
 	fmt.Printf("[ WWW ] teamid=%d name=%s targetip=%s url=%s\n", service.TeamID, service.Name, ip, www.URL)
 
-	status := check.Web(ip)
+    // ip or url must be in format: http://192.168.1.1 for web check
+    // so we prepend http://
+    httpIP := "http://" + ip
+
+    var status bool
+    if www.URL != "" {
+        status = check.Web(www.URL)
+    } else {
+	    status = check.Web(httpIP)
+    }
 	updateCheckCount(service, status)
 }
 
@@ -243,6 +252,8 @@ func LoadFromServiceType(serviceType ServiceType) ServiceCheck {
 	case "www":
 		var www WebService
 		_ = json.Unmarshal(data, &www)
+        // TODO: do some verification of www.URL to ensure it is either "" or
+        // is prepended by http:// or https://
 		return www
 	case "dns":
 		var dns DomainNameService
