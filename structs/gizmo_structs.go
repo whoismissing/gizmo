@@ -44,7 +44,7 @@ type Team struct {
 // representing a Service. ServiceID's on their own are NOT unique.
 type Service struct {
 	ServiceID int
-	Name string
+	Name string // primary key in the SQL database
 	Status bool
 	ServiceType ServiceType
 	ServiceCheck ServiceCheck
@@ -159,7 +159,7 @@ func (www WebService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	ip := (*service).HostIP
-	fmt.Printf("[ WWW ] targetip=%s\n", ip)
+	fmt.Printf("[ WWW ] teamid=%d name=%s targetip=%s url=%s\n", service.TeamID, service.Name, ip, www.URL)
 
 	status := check.Web(ip)
 	updateCheckCount(service, status)

@@ -61,7 +61,7 @@ func createServiceTable(db *sql.DB) {
     debug.LogBegin()
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Service" (
-		"Name"	TEXT NOT NULL,
+		"Name"	TEXT NOT NULL PRIMARY KEY,
 		"TeamID"	INTEGER,
 		"ServiceID"	INTEGER AUTO_INCREMENT,
 		"HostIP"	TEXT,
@@ -317,11 +317,8 @@ func updateGameTable(db *sql.DB, game structs.Game) {
 }
 
 // updateServiceTable() executes the SQL statement to update the NumberOfMissedChecks
-// and NumberOfChecks fields of an entry in the Service table based on ServiceID given
+// and NumberOfChecks fields of an entry in the Service table based on Service.Name given
 // a Service object.
-// BUG(todo): Since ServiceID is NOT a primary key, this will result in incorrect data
-// recorded. The SQL statement should be changed to use the Service Name
-// in the WHERE clause.
 func updateServiceTable(db *sql.DB, service structs.Service) {
     debug.LogBegin()
 
@@ -334,14 +331,14 @@ func updateServiceTable(db *sql.DB, service structs.Service) {
 	UPDATE "Service" SET 
 		"NumberOfMissedChecks"=?,
 		"NumberOfChecks"=?
-	WHERE "ServiceID"=?;
+	WHERE "Name"=?;
 	`)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	serviceID := service.ServiceID
-	_, err = stmt.Exec(service.ChecksMissed, service.ChecksAttempted, serviceID)
+    serviceName := service.Name
+	_, err = stmt.Exec(service.ChecksMissed, service.ChecksAttempted, serviceName)
 	if err != nil {
 		log.Fatal(err)
 	}

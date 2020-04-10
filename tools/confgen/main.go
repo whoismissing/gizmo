@@ -243,6 +243,7 @@ func addService(serviceID int, teamID int) {
         fmt.Println("\t\tService name is default", defaultName)
         serviceName = defaultName
     }
+    serviceName = strings.TrimSuffix(serviceName, "\n")
 
     fmt.Printf("\tHostIP [127.0.0.1]: ")
     hostIP := readStringFromUser()
@@ -251,6 +252,7 @@ func addService(serviceID int, teamID int) {
         fmt.Println("\t\tHost ip is default", defaultIP)
         hostIP = defaultIP
     }
+    hostIP = strings.TrimSuffix(hostIP, "\n")
 
     rawType := readServiceTypeFromUser()
     if rawType == "" {
