@@ -17,11 +17,14 @@ import (
 	"fmt"
 	"log"
 	"time"
-	//"math/rand"
+	"math/rand"
 	"sync"
 )
 
-var scoreboardHTML string
+var (
+    scoreboardHTML string
+    randomInterval bool = false
+)
 
 func parseArgs(parser *argparse.Parser) (string, string) {
 	conf := parser.String("i", "input", &argparse.Options{Required: true, Help: "Input config filename"})
@@ -110,9 +113,15 @@ func main() {
 
     time.Sleep(time.Duration(1) * time.Second)
 
+    sleepTime := 3
+
 	// Loop every three to five minutes until next service check
-	//min := 180 // 180 seconds = 3 minutes
-	//max := 300 // 300 seconds = 5 minutes
+    if randomInterval {
+        min := 180 // 180 seconds = 3 minutes
+        max := 300 // 300 seconds = 5 minutes
+        sleepTime = rand.Intn(max - min) + min
+    }
+
 	for {
 
 		for i := 0; i < len(teams); i++ {
@@ -126,7 +135,6 @@ func main() {
 		}
 
 		fmt.Println("=======================")
-		sleepTime := 3 //rand.Intn(max - min) + min
 		time.Sleep(time.Duration(sleepTime) * time.Second)
 	}
 }

@@ -1,3 +1,5 @@
+// Package debug provides methods for logging the code filename, line number, and function name
+// at the point where the logging routine is called in order to assist the developer in debugging.
 package debug
 
 import (
@@ -10,11 +12,14 @@ import (
 var (
     LogB = log.New(LogWriter{}, "BEGIN: ", 0)
     LogE = log.New(LogWriter{}, "END: ", 0)
+    // global variable Status is used to toggle debug logging
     Status = false
 )
 
 type LogWriter struct{}
 
+// Write() obtains the code file, line number, and function name of its caller and outputs
+// to stdout.
 func (f LogWriter) Write(p []byte) (n int, err error) {
     pc, file, line, ok := runtime.Caller(4)
     if !ok {
