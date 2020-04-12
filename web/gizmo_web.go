@@ -50,18 +50,18 @@ function countdown(remaining) {
 				html += "red"
 			}
 			html += "\">"
-            html += services[j].HostIP
-            html += "&emsp;" // 4 spaces in html
+			html += services[j].HostIP
+			html += "&emsp;" // 4 spaces in html
 
-            top := len(services[j].PrevStatuses) - 1
-            /* if service.PrevStatuses is empty */
-            if top < 0 {
+			top := len(services[j].PrevStatuses) - 1
+			/* if service.PrevStatuses is empty */
+			if top < 0 {
 
-            } else {
-                html += services[j].PrevStatuses[top].Time.Format("2006-01-02 15:04:05")
-            }
+			} else {
+				html += services[j].PrevStatuses[top].Time.Format("2006-01-02 15:04:05")
+			}
 
-            html += "</td>\n"
+			html += "</td>\n"
 		}
 		html += "</tr>\n"
 	}
@@ -70,4 +70,5 @@ function countdown(remaining) {
 	html += "</body>\n"
 	html += "</html>\n"
 
-	return html }
+	return html
+}

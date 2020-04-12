@@ -17,12 +17,12 @@ func Ping(ip string) bool {
 
 	err := cmd.Run()
 
-    var status bool
-    if err != nil {
-        status = false
-    } else {
-        status = true
-    }
+	var status bool
+	if err != nil {
+		status = false
+	} else {
+		status = true
+	}
 
-    return status
+	return status
 }

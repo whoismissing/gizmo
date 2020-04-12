@@ -20,7 +20,7 @@ go get -u -v github.com/akamensky/argparse
 go get -u -v github.com/jlaffaye/ftp
 go get -u -v github.com/mattn/go-sqlite3
 go get -u -v golang.org/x/crypto/ssh
-go get -u github.com/whoismissing/gizmo
+go get -u -v github.com/whoismissing/gizmo
 
 cd ~/go/src/github.com/whoismissing/gizmo
 go build
@@ -47,7 +47,11 @@ Arguments:
 
 ```
 
-Generally the work flow is to use [confgen](./tools/confgen) to generate a JSON config file, then pass the config as the input for gizmo `./gizmo -i examle.config`. An sqlite3 database will be created storing all of the service checks which can be analyzed later.
+Generally the work flow is to:
+1. Use [confgen](./tools/confgen) to generate a JSON config file
+2. Pass the config as the input for gizmo `./gizmo -i example.config`
+3. View the static web page on port 8080
+4. An sqlite3 database will be created storing all of the service checks which can be analyzed later
 
 # Releases
 

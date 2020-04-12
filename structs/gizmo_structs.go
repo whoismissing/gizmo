@@ -7,17 +7,17 @@ import (
 	check "github.com/whoismissing/gizmo/check"
 
 	"encoding/json"
-	"math/rand"
-	"time"
-	"sync"
 	"fmt"
+	"math/rand"
+	"sync"
+	"time"
 )
 
 // Game describes the instance of a session and can contain multiple teams.
 // Game is a singleton so there should only be one game serviced at a time.
 type Game struct {
-	GameID int
-	Teams []Team
+	GameID    int
+	Teams     []Team
 	StartTime time.Time
 }
 
@@ -25,11 +25,11 @@ type Game struct {
 // A Team contains the ratio of service uptime across all services.
 // TeamID is the unique key for representing a Team.
 type Team struct {
-	TeamID uint
-	TotalChecksMissed uint
-	TotalChecksHit uint
+	TeamID               uint
+	TotalChecksMissed    uint
+	TotalChecksHit       uint
 	TotalChecksAttempted uint
-	Services []Service
+	Services             []Service
 }
 
 // Service describes the unique instance of a service that a team is supporting.
@@ -43,31 +43,31 @@ type Team struct {
 // The Service.Name and combination of ServiceID and TeamID are the unique keys for
 // representing a Service. ServiceID's on their own are NOT unique.
 type Service struct {
-	ServiceID int
-	Name string // primary key in the SQL database
-	Status bool
-	ServiceType ServiceType
-	ServiceCheck ServiceCheck
-	HostIP string
-	TeamID uint
-	ChecksMissed uint
-	ChecksHit uint
+	ServiceID       int
+	Name            string // primary key in the SQL database
+	Status          bool
+	ServiceType     ServiceType
+	ServiceCheck    ServiceCheck
+	HostIP          string
+	TeamID          uint
+	ChecksMissed    uint
+	ChecksHit       uint
 	ChecksAttempted uint
-	PrevStatuses []Status
+	PrevStatuses    []Status
 }
 
 // Status represents a single instance of a binary check [ up / down ] and records
 // the time of the check.
 type Status struct {
-	Time time.Time
+	Time   time.Time
 	Status bool
 }
 
 // ServiceType is a wrapper for ServiceCheck that is used as a hack so
-// as not to lose type information when a ServiceCheck (interface) object is 
+// as not to lose type information when a ServiceCheck (interface) object is
 // marshalled to JSON.
 type ServiceType struct {
-	Type string
+	Type         string
 	ServiceCheck json.RawMessage
 }
 
@@ -93,7 +93,7 @@ type DomainNameService struct {
 type FileTransferService struct {
 	Username string
 	Password string
-    Filename string
+	Filename string
 }
 
 // SecureShellService represents a ssh ServiceCheck and contains the username,
@@ -101,20 +101,19 @@ type FileTransferService struct {
 type SecureShellService struct {
 	Username string
 	Password string
-	Command string
+	Command  string
 }
 
-// PingService represents a ping ServiceCheck and is empty because the 
+// PingService represents a ping ServiceCheck and is empty because the
 // Service.HostIP field is used for its service check.
 type PingService struct {
-
 }
 
 // ExternalService represents an externally written service check and contains
 // the script path to execute. The Service.HostIP is passed as the first argument
 // to the script.
 type ExternalService struct {
-    ScriptPath string
+	ScriptPath string
 }
 
 // updateCheckCount() increments the ChecksHit or ChecksMissed counts of a
@@ -145,11 +144,11 @@ func UpdateTeamCheckCount(team *Team) {
 	services := (*team).Services
 	for i := 0; i < len(services); i++ {
 		service := services[i]
-        if (service.Status) {
-            (*team).TotalChecksHit += 1
-        } else {
-		    (*team).TotalChecksMissed += 1
-        }
+		if service.Status {
+			(*team).TotalChecksHit += 1
+		} else {
+			(*team).TotalChecksMissed += 1
+		}
 		(*team).TotalChecksAttempted += 1
 	}
 }
@@ -162,16 +161,16 @@ func (www WebService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	ip := (*service).HostIP
 	fmt.Printf("[ WWW ] teamid=%d name=%s targetip=%s url=%s\n", service.TeamID, service.Name, ip, www.URL)
 
-    // ip or url must be in format: http://192.168.1.1 for web check
-    // so we prepend http://
-    httpIP := "http://" + ip
+	// ip or url must be in format: http://192.168.1.1 for web check
+	// so we prepend http://
+	httpIP := "http://" + ip
 
-    var status bool
-    if www.URL != "" {
-        status = check.Web(www.URL)
-    } else {
-	    status = check.Web(httpIP)
-    }
+	var status bool
+	if www.URL != "" {
+		status = check.Web(www.URL)
+	} else {
+		status = check.Web(httpIP)
+	}
 	updateCheckCount(service, status)
 }
 
@@ -211,7 +210,7 @@ func (ssh SecureShellService) CheckHealth(service *Service, wg *sync.WaitGroup) 
 	ip := (*service).HostIP
 	user := ssh.Username
 	pass := ssh.Password
-    command := ssh.Command
+	command := ssh.Command
 	fmt.Printf("[ SSH ] teamID=%d name=%s targetip=%s username=%s password=%s command=%s\n", service.TeamID, service.Name, ip, user, pass, command)
 
 	status := check.Ssh(ip, user, pass, command)
@@ -233,14 +232,14 @@ func (ping PingService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 // ext.CheckHealth() is the CheckHealth() method implemented by the ExternalService
 // object that calls the corresponding external checking method from package check.
 func (ext ExternalService) CheckHealth(service *Service, wg *sync.WaitGroup) {
-    defer wg.Done()
+	defer wg.Done()
 
-    ip := (*service).HostIP
-    filepath := ext.ScriptPath
-    fmt.Printf("[ EXT ] teamID=%d name=%s targetip=%s filepath=%s\n", service.TeamID, service.Name, ip, filepath)
+	ip := (*service).HostIP
+	filepath := ext.ScriptPath
+	fmt.Printf("[ EXT ] teamID=%d name=%s targetip=%s filepath=%s\n", service.TeamID, service.Name, ip, filepath)
 
-    status := check.External(ip, filepath)
-    updateCheckCount(service, status)
+	status := check.External(ip, filepath)
+	updateCheckCount(service, status)
 }
 
 // LoadFromServiceType() unmarshals the specified ServiceCheck object given its
@@ -252,8 +251,8 @@ func LoadFromServiceType(serviceType ServiceType) ServiceCheck {
 	case "www":
 		var www WebService
 		_ = json.Unmarshal(data, &www)
-        // TODO: do some verification of www.URL to ensure it is either "" or
-        // is prepended by http:// or https://
+		// TODO: do some verification of www.URL to ensure it is either "" or
+		// is prepended by http:// or https://
 		return www
 	case "dns":
 		var dns DomainNameService
@@ -271,12 +270,12 @@ func LoadFromServiceType(serviceType ServiceType) ServiceCheck {
 		var ping PingService
 		_ = json.Unmarshal(data, &ping)
 		return ping
-    case "ext":
-        var ext ExternalService
-        _ = json.Unmarshal(data, &ext)
-        return ext
+	case "ext":
+		var ext ExternalService
+		_ = json.Unmarshal(data, &ext)
+		return ext
 	case "default":
-        fmt.Println("LoadFromServiceType: unrecognized ServiceType")
+		fmt.Println("LoadFromServiceType: unrecognized ServiceType")
 		return nil
 	}
 
@@ -285,7 +284,7 @@ func LoadFromServiceType(serviceType ServiceType) ServiceCheck {
 
 // NewGame() returns a new Game object given an array of Teams.
 func NewGame(teams []Team) Game {
-	game := Game{GameID:rand.Int(), Teams: teams, StartTime: time.Now()}
+	game := Game{GameID: rand.Int(), Teams: teams, StartTime: time.Now()}
 	return game
 }
 
@@ -311,7 +310,7 @@ func NewService(serviceName string, newTeamID uint) Service {
 // a corresponding teamID.
 func NewServices(numServices uint, teamID uint) []Service {
 	services := make([]Service, numServices)
-	for i:= uint(0); i < numServices; i++ {
+	for i := uint(0); i < numServices; i++ {
 		services[i].TeamID = teamID
 	}
 	return services

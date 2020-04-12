@@ -9,15 +9,15 @@ import (
 func Dns(ip string, record string) bool {
 	foundIP, err := net.LookupIP(record)
 
-    var status bool
+	var status bool
 
-    if err != nil {
-        status = false
-    }
+	if err != nil {
+		status = false
+	}
 
-    if ip == foundIP[0].String() {
-        status = true
-    }
+	if ip == foundIP[0].String() {
+		status = true
+	}
 
-    return status
+	return status
 }

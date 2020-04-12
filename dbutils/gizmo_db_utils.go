@@ -4,20 +4,20 @@
 package dbutils
 
 import (
-	structs "github.com/whoismissing/gizmo/structs"
-    debug "github.com/whoismissing/gizmo/debug"
 	_ "github.com/mattn/go-sqlite3"
+	debug "github.com/whoismissing/gizmo/debug"
+	structs "github.com/whoismissing/gizmo/structs"
 
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
-    "fmt"
 )
 
-// createGameTable() executes the SQL statement to create the Game Table given a 
+// createGameTable() executes the SQL statement to create the Game Table given a
 // database connection.
 func createGameTable(db *sql.DB) {
-    debug.LogBegin()
+	debug.LogBegin()
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Game" (
 		"GameStartTime"		INTEGER,
@@ -30,14 +30,14 @@ func createGameTable(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
 // createTeamTable() executes the SQL statement to create the Team Table given a
 // database connection.
 func createTeamTable(db *sql.DB) {
-    debug.LogBegin()
+	debug.LogBegin()
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Team" (
 		"GameID"	INTEGER,
@@ -51,14 +51,14 @@ func createTeamTable(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
 // createServiceTable() executes the SQL statement to create the Service Table given
 // a database connection.
 func createServiceTable(db *sql.DB) {
-    debug.LogBegin()
+	debug.LogBegin()
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Service" (
 		"Name"	TEXT NOT NULL PRIMARY KEY,
@@ -74,14 +74,14 @@ func createServiceTable(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
 // createStatusTable() executes the SQL statement to create the Status Table given a
 // database connection.
 func createStatusTable(db *sql.DB) {
-    debug.LogBegin()
+	debug.LogBegin()
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS "Status" (
 		"ServiceID"	INTEGER,
@@ -96,14 +96,14 @@ func createStatusTable(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
 // initializeService() executes the SQL statement to insert an entry into the Service
 // table given a database connection, Service object, and serviceID.
 func initializeService(db *sql.DB, service structs.Service, serviceID int) {
-    debug.LogBegin()
+	debug.LogBegin()
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -136,21 +136,21 @@ func initializeService(db *sql.DB, service structs.Service, serviceID int) {
 	_ = tx.Commit()
 	stmt.Close()
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
 // initializeServices() inserts entries into the Service table given an array of Service
 // objects and a database connection.
 func initializeServices(db *sql.DB, services []structs.Service) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	for i := 0; i < len(services); i++ {
 		services[i].ServiceID = i
 		initializeService(db, services[i], i)
 	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
@@ -158,7 +158,7 @@ func initializeServices(db *sql.DB, services []structs.Service) {
 // table given a database connection, Team object, and gameID. Initializing a team
 // will also initialize any services corresponding to the Team.
 func initializeTeam(db *sql.DB, team structs.Team, gameID int) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -186,20 +186,20 @@ func initializeTeam(db *sql.DB, team structs.Team, gameID int) {
 	services := team.Services
 	initializeServices(db, services)
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
 // initializeTeams() inserts entries into the Team table given an array of Team
 // objects, a database connection, and the gameID.
 func initializeTeams(db *sql.DB, teams []structs.Team, gameID int) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	for i := 0; i < len(teams); i++ {
 		initializeTeam(db, teams[i], gameID)
 	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // initializeGame() executes the SQL statement to insert an entry into the Game
@@ -207,7 +207,7 @@ func initializeTeams(db *sql.DB, teams []structs.Team, gameID int) {
 // initialize any teams corresponding to the game, and initialize any services
 // corresponding to each team.
 func initializeGame(db *sql.DB, game structs.Game) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -238,56 +238,56 @@ func initializeGame(db *sql.DB, game structs.Game) {
 	teams := game.Teams
 	initializeTeams(db, teams, gameID)
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
 // insertNewTeam() queries the database for the GameID and will insert a new entry
 // into the Team table given a Team object and database connection.
 func insertNewTeam(db *sql.DB, team structs.Team) {
-    debug.LogBegin()
-    sqlStatement := `SELECT GameID FROM GAME`
+	debug.LogBegin()
+	sqlStatement := `SELECT GameID FROM GAME`
 
-    row := db.QueryRow(sqlStatement)
-    var gameID int
+	row := db.QueryRow(sqlStatement)
+	var gameID int
 
-    switch err := row.Scan(&gameID); err {
-    case sql.ErrNoRows:
-        fmt.Println("insertNewTeam: No rows returned")
-    case nil: // success!
-        initializeTeam(db, team, gameID)
-    default:
-        panic(err)
-    }
+	switch err := row.Scan(&gameID); err {
+	case sql.ErrNoRows:
+		fmt.Println("insertNewTeam: No rows returned")
+	case nil: // success!
+		initializeTeam(db, team, gameID)
+	default:
+		panic(err)
+	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // insertNewService() queries the highest ServiceID and will insert a new
 // entry into the Service table given a Service object and database connection.
 func insertNewService(db *sql.DB, service structs.Service) {
-    debug.LogBegin()
-    sqlStatement := `SELECT MAX(ServiceID) FROM Service`
+	debug.LogBegin()
+	sqlStatement := `SELECT MAX(ServiceID) FROM Service`
 
-    row := db.QueryRow(sqlStatement)
-    var lastServiceID int
+	row := db.QueryRow(sqlStatement)
+	var lastServiceID int
 
-    switch err := row.Scan(&lastServiceID); err {
-    case sql.ErrNoRows:
-        fmt.Println("insertNewService: No rows returned")
-    case nil: // success!
-        initializeService(db, service, lastServiceID + 1)
-    default:
-        panic(err)
-    }
+	switch err := row.Scan(&lastServiceID); err {
+	case sql.ErrNoRows:
+		fmt.Println("insertNewService: No rows returned")
+	case nil: // success!
+		initializeService(db, service, lastServiceID+1)
+	default:
+		panic(err)
+	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // updateGameTable() executes the SQL statement to update the CurrentGameTime
 // of the Game Table given a Game object.
 func updateGameTable(db *sql.DB, game structs.Game) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -312,7 +312,7 @@ func updateGameTable(db *sql.DB, game structs.Game) {
 	_ = tx.Commit()
 	stmt.Close()
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
@@ -320,7 +320,7 @@ func updateGameTable(db *sql.DB, game structs.Game) {
 // and NumberOfChecks fields of an entry in the Service table based on Service.Name given
 // a Service object.
 func updateServiceTable(db *sql.DB, service structs.Service) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -337,7 +337,7 @@ func updateServiceTable(db *sql.DB, service structs.Service) {
 		log.Fatal(err)
 	}
 
-    serviceName := service.Name
+	serviceName := service.Name
 	_, err = stmt.Exec(service.ChecksMissed, service.ChecksAttempted, serviceName)
 	if err != nil {
 		log.Fatal(err)
@@ -346,16 +346,16 @@ func updateServiceTable(db *sql.DB, service structs.Service) {
 	_ = tx.Commit()
 	stmt.Close()
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 
 }
 
 // updateStatusTable() executes the SQL statement to insert a new entry into the Status
-// table given a Service object. Each entry in the Status table is a UNIQUE record of 
+// table given a Service object. Each entry in the Status table is a UNIQUE record of
 // state and time by using both TeamID and ServiceID since ServiceID is NOT a primary key.
 func updateStatusTable(db *sql.DB, service structs.Service) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -375,7 +375,7 @@ func updateStatusTable(db *sql.DB, service structs.Service) {
 	}
 
 	serviceID := service.ServiceID
-    teamID := service.TeamID
+	teamID := service.TeamID
 	top := len(service.PrevStatuses) - 1
 
 	/* if service.PrevStatuses is empty */
@@ -392,7 +392,7 @@ func updateStatusTable(db *sql.DB, service structs.Service) {
 	_ = tx.Commit()
 	stmt.Close()
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 
 }
@@ -400,21 +400,21 @@ func updateStatusTable(db *sql.DB, service structs.Service) {
 // updateServices() updates the Service and Status tables for each Service object
 // provided in the array.
 func updateServices(db *sql.DB, services []structs.Service) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	for i := 0; i < len(services); i++ {
 		updateServiceTable(db, services[i])
 		updateStatusTable(db, services[i])
 	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // updateTeamTable() executes the SQL statement to update the TotalMissedChecks and
-// TotalChecks fields of an entry in the Team table based on TeamID given a Team 
+// TotalChecks fields of an entry in the Team table based on TeamID given a Team
 // object and database connection.
 func updateTeamTable(db *sql.DB, team structs.Team) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -441,169 +441,169 @@ func updateTeamTable(db *sql.DB, team structs.Team) {
 
 	updateServices(db, team.Services)
 
-    debug.LogEnd()
+	debug.LogEnd()
 	return
 }
 
 // updateTeams() updates each entry in the Team table corresponding to each Team object.
 func updateTeams(db *sql.DB, teams []structs.Team) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	for i := 0; i < len(teams); i++ {
 		updateTeamTable(db, teams[i])
 	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // countTablesFromSQLMaster() returns the number of tables in the sqlite3 database.
 func countTablesFromSQLMaster(db *sql.DB) int64 {
-    debug.LogBegin()
+	debug.LogBegin()
 
-    sqlStatement := `SELECT COUNT(*) FROM sqlite_master`
-    row := db.QueryRow(sqlStatement)
-    var count int64
+	sqlStatement := `SELECT COUNT(*) FROM sqlite_master`
+	row := db.QueryRow(sqlStatement)
+	var count int64
 
-    switch err := row.Scan(&count); err {
-    case sql.ErrNoRows:
-        fmt.Println("countTablesFromSQLMaster: No rows returned")
-    case nil: // success!
-        debug.LogEnd()
-        return count
-    default:
-        panic(err)
-    }
+	switch err := row.Scan(&count); err {
+	case sql.ErrNoRows:
+		fmt.Println("countTablesFromSQLMaster: No rows returned")
+	case nil: // success!
+		debug.LogEnd()
+		return count
+	default:
+		panic(err)
+	}
 
-    debug.LogEnd()
-    return -1
+	debug.LogEnd()
+	return -1
 }
 
 // CreateDatabase() creates the Game, Team, Service, and Status tables in the sqlite3
 // database given a database connection.
 func CreateDatabase(db *sql.DB) {
-    debug.LogBegin()
+	debug.LogBegin()
 
 	createGameTable(db)
 	createTeamTable(db)
 	createServiceTable(db)
 	createStatusTable(db)
 
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // InitializeDatabase() initializes the entries in the Game, Team, and Service tables
 // in the database given a database connection and a newly initialized Game object.
 func InitializeDatabase(db *sql.DB, game structs.Game) {
-    debug.LogBegin()
+	debug.LogBegin()
 	initializeGame(db, game)
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // UpdateDatabase() updates the Game and Team tables given a database connection
 // and a Game object.
 func UpdateDatabase(db *sql.DB, game structs.Game) {
-    debug.LogBegin()
+	debug.LogBegin()
 	updateGameTable(db, game)
 	updateTeams(db, game.Teams)
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // DoesDatabaseExit() counts the number of tables in the sqlite3 database as a naive
 // check to see if the Game, Team, Service, and Status tables already exist.
 func DoesDatabaseExist(db *sql.DB) bool {
-    debug.LogBegin()
-    if countTablesFromSQLMaster(db) < 4 {
-        debug.LogEnd()
-        return false
-    }
-    debug.LogEnd()
-    return true
+	debug.LogBegin()
+	if countTablesFromSQLMaster(db) < 4 {
+		debug.LogEnd()
+		return false
+	}
+	debug.LogEnd()
+	return true
 }
 
 // UpdateGameFromDatabase() obtains the corresponding entry from the Game table and
 // updates the user-provided Game object.
 func UpdateGameFromDatabase(db *sql.DB, game *structs.Game) {
-    debug.LogBegin()
+	debug.LogBegin()
 
-    sqlStatement := `SELECT GameID, GameStartTime FROM Game`
+	sqlStatement := `SELECT GameID, GameStartTime FROM Game`
 
-    row := db.QueryRow(sqlStatement)
-    var unix_time int64
+	row := db.QueryRow(sqlStatement)
+	var unix_time int64
 
-    switch err := row.Scan(&game.GameID, &unix_time); err {
-    case sql.ErrNoRows:
-        fmt.Println("UpdateGameFromDatabase: No rows returned")
-    case nil: // success!
-        game.StartTime = time.Unix(unix_time, 0)
-    default:
-        panic(err)
-    }
+	switch err := row.Scan(&game.GameID, &unix_time); err {
+	case sql.ErrNoRows:
+		fmt.Println("UpdateGameFromDatabase: No rows returned")
+	case nil: // success!
+		game.StartTime = time.Unix(unix_time, 0)
+	default:
+		panic(err)
+	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // LoadTeamChecksFromDatabase() obtains the corresponding entry from the Team table
 // and updates the user-provided Team object.
 func LoadTeamChecksFromDatabase(db *sql.DB, team *structs.Team) {
-    debug.LogBegin()
+	debug.LogBegin()
 
-    sqlStatement := "SELECT TotalMissedChecks, TotalChecks FROM Team WHERE TeamID=?"
-    row := db.QueryRow(sqlStatement, team.TeamID)
+	sqlStatement := "SELECT TotalMissedChecks, TotalChecks FROM Team WHERE TeamID=?"
+	row := db.QueryRow(sqlStatement, team.TeamID)
 
-    var totalChecksMissed int
-    var totalChecksAttempted int
-    switch err := row.Scan(&totalChecksMissed, &totalChecksAttempted); err {
-    case sql.ErrNoRows:
-        fmt.Println("LoadTeamChecksFromDatabase: No rows returned")
-        insertNewTeam(db, *team)
-    case nil: // success!
-        team.TotalChecksMissed = uint(totalChecksMissed)
-        team.TotalChecksHit = uint(totalChecksAttempted) - uint(totalChecksMissed)
-        team.TotalChecksAttempted = uint(totalChecksAttempted)
-    default:
-    }
+	var totalChecksMissed int
+	var totalChecksAttempted int
+	switch err := row.Scan(&totalChecksMissed, &totalChecksAttempted); err {
+	case sql.ErrNoRows:
+		fmt.Println("LoadTeamChecksFromDatabase: No rows returned")
+		insertNewTeam(db, *team)
+	case nil: // success!
+		team.TotalChecksMissed = uint(totalChecksMissed)
+		team.TotalChecksHit = uint(totalChecksAttempted) - uint(totalChecksMissed)
+		team.TotalChecksAttempted = uint(totalChecksAttempted)
+	default:
+	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // LoadServiceFromDatabase() obtains the corresponding entry from the Service table
 // and updates the user-provided Service object.
 func LoadServiceFromDatabase(db *sql.DB, service *structs.Service) {
-    debug.LogBegin()
+	debug.LogBegin()
 
-    sqlStatement := "SELECT ServiceID, NumberOfMissedChecks, NumberOfChecks FROM Service WHERE Name=?"
-    row := db.QueryRow(sqlStatement, service.Name)
+	sqlStatement := "SELECT ServiceID, NumberOfMissedChecks, NumberOfChecks FROM Service WHERE Name=?"
+	row := db.QueryRow(sqlStatement, service.Name)
 
-    var serviceID int
-    var checksMissed int
-    var checksAttempted int
-    switch err := row.Scan(&serviceID, &checksMissed, &checksAttempted); err {
-    case sql.ErrNoRows:
-        fmt.Println("LoadServiceFromDatabase: No rows returned")
-        insertNewService(db, *service)
-    case nil: // success!
-        service.ServiceID = serviceID
-        service.ChecksAttempted = uint(checksAttempted)
-        service.ChecksMissed = uint(checksMissed)
-        service.ChecksHit = uint(checksAttempted) - uint(checksMissed)
-    default:
-    }
+	var serviceID int
+	var checksMissed int
+	var checksAttempted int
+	switch err := row.Scan(&serviceID, &checksMissed, &checksAttempted); err {
+	case sql.ErrNoRows:
+		fmt.Println("LoadServiceFromDatabase: No rows returned")
+		insertNewService(db, *service)
+	case nil: // success!
+		service.ServiceID = serviceID
+		service.ChecksAttempted = uint(checksAttempted)
+		service.ChecksMissed = uint(checksMissed)
+		service.ChecksHit = uint(checksAttempted) - uint(checksMissed)
+	default:
+	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 }
 
 // LoadGameFromDatabase() loads data for each team and corresponding services per team
 // from the sqlite3 database into the corresponding objects provided a Game object and
 // a database connection.
 func LoadGameFromDatabase(db *sql.DB, game *structs.Game) {
-    debug.LogBegin()
+	debug.LogBegin()
 
-    for i := 0; i < len(game.Teams); i++ {
-        LoadTeamChecksFromDatabase(db, &game.Teams[i])
-        for j := 0; j < len(game.Teams[i].Services); j++ {
-            LoadServiceFromDatabase(db, &game.Teams[i].Services[j])
-        }
-    }
+	for i := 0; i < len(game.Teams); i++ {
+		LoadTeamChecksFromDatabase(db, &game.Teams[i])
+		for j := 0; j < len(game.Teams[i].Services); j++ {
+			LoadServiceFromDatabase(db, &game.Teams[i].Services[j])
+		}
+	}
 
-    debug.LogEnd()
+	debug.LogEnd()
 }

@@ -7,16 +7,16 @@ import (
 func TestDebugLogStatusFalse(t *testing.T) {
 	t.Logf("TestDebugLogStatusFalse")
 
-    LogBegin()
-    LogEnd()
+	LogBegin()
+	LogEnd()
 
 }
 
 func TestDebugLogStatusTrue(t *testing.T) {
 	t.Logf("TestDebugLogStatusTrue")
 
-    Status = true
-    LogBegin()
-    LogEnd()
+	Status = true
+	LogBegin()
+	LogEnd()
 
 }

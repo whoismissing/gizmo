@@ -1,44 +1,44 @@
 package check
 
 import (
+	"fmt"
 	"testing"
-    "fmt"
 )
 
 func TestWebCheck(t *testing.T) {
-    t.Logf("TestWeb")
+	t.Logf("TestWeb")
 
-    up := Web("http://localhost")
+	up := Web("http://localhost")
 
-    if up {
-        fmt.Println("web is up")
-    } else {
-        fmt.Println("web is down")
-    }
+	if up {
+		fmt.Println("web is up")
+	} else {
+		fmt.Println("web is down")
+	}
 
 }
 
 func TestDnsCheck(t *testing.T) {
-    t.Logf("TestDns")
+	t.Logf("TestDns")
 
-    down := Dns("127.0.0.1", "doesntexist.com")
+	down := Dns("127.0.0.1", "doesntexist.com")
 
-    fmt.Println("dns is", down)
+	fmt.Println("dns is", down)
 
 }
 
 func TestSshCheck(t *testing.T) {
-    t.Logf("TestSsh")
+	t.Logf("TestSsh")
 
-    up := Ssh("127.0.0.1", "username", "password", "ls > /tmp/i")
-    fmt.Println("ssh is", up)
+	up := Ssh("127.0.0.1", "username", "password", "ls > /tmp/i")
+	fmt.Println("ssh is", up)
 
 }
 
 func TestFtpCheck(t *testing.T) {
-    t.Logf("TestFtp")
+	t.Logf("TestFtp")
 
-    up := Ftp("127.0.0.1", "anonymous", "", "test.txt")
+	up := Ftp("127.0.0.1", "anonymous", "", "test.txt")
 
-    fmt.Println("ftp is", up)
+	fmt.Println("ftp is", up)
 }

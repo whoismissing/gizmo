@@ -5,18 +5,18 @@ package config
 import (
 	structs "github.com/whoismissing/gizmo/structs"
 
-	"io/ioutil"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 )
 
 // LoadServiceChecks() obtains the ServiceCheck objects for each Service in
 // services assuming their ServiceType has been obtained.
 func LoadServiceChecks(services []structs.Service) {
 	for i := 0; i < len(services); i++ {
-        // ServiceType is a wrapper for ServiceCheck as ServiceCheck is an 
-        // interface whose type information is lost when dumped to JSON
-        // This is a hack!
+		// ServiceType is a wrapper for ServiceCheck as ServiceCheck is an
+		// interface whose type information is lost when dumped to JSON
+		// This is a hack!
 		serviceType := services[i].ServiceType
 		serviceCheck := structs.LoadFromServiceType(serviceType)
 		if services[i].Name == "" {

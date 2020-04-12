@@ -8,7 +8,7 @@ import (
 // Ssh() authenticates to an ssh server and executes a command
 // on port 22 given a username, password, and command strings
 func Ssh(ip string, user string, pass string, command string) bool {
-    // TODO: make timeout adjustable
+	// TODO: make timeout adjustable
 	sshConfig := &ssh.ClientConfig{
 		User:    user,
 		Auth:    []ssh.AuthMethod{ssh.Password(pass)},
@@ -17,7 +17,7 @@ func Ssh(ip string, user string, pass string, command string) bool {
 
 	sshConfig.HostKeyCallback = ssh.InsecureIgnoreHostKey()
 
-    // TODO: make port adjustable
+	// TODO: make port adjustable
 	client, err := ssh.Dial("tcp", ip+":22", sshConfig)
 	if err != nil {
 		return false

@@ -10,7 +10,7 @@ import (
 // port 21 given a username, password, and filename.
 func Ftp(ip string, user string, pass string, filename string) bool {
 
-    // TODO: make port and timeout adjustable
+	// TODO: make port and timeout adjustable
 	client, err := ftp.Dial(ip+":21", ftp.DialWithTimeout(time.Second))
 	if err != nil {
 		return false

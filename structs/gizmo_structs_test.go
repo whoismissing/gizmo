@@ -12,12 +12,12 @@ func TestInitializeStructs(t *testing.T) {
 	team1 := NewTeam(teamID)
 
 	team1.Services = NewServices(6, teamID)
-	team1.Services[0].ServiceCheck = WebService{URL:"team1.local"}
-	team1.Services[1].ServiceCheck = DomainNameService{DomainName:"team1.local"}
-	team1.Services[2].ServiceCheck = FileTransferService{Username:"anonymous"}
-	team1.Services[3].ServiceCheck = SecureShellService{Username:"ccdc", Password:"changeme", Command: "ls"}
+	team1.Services[0].ServiceCheck = WebService{URL: "team1.local"}
+	team1.Services[1].ServiceCheck = DomainNameService{DomainName: "team1.local"}
+	team1.Services[2].ServiceCheck = FileTransferService{Username: "anonymous"}
+	team1.Services[3].ServiceCheck = SecureShellService{Username: "ccdc", Password: "changeme", Command: "ls"}
 	team1.Services[4].ServiceCheck = PingService{}
-	team1.Services[5].ServiceCheck = ExternalService{Filepath:"ls"}
+	team1.Services[5].ServiceCheck = ExternalService{Filepath: "ls"}
 
 	t.Logf("team 1 services = %+v\n", team1.Services)
 
