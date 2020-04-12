@@ -73,14 +73,24 @@ func getDnsServiceType() structs.ServiceType {
     return dnsServiceType
 }
 
-// getFtpServiceType() prompts the user for a username and returns the newly-created
-// ftp ServiceType object.
+// getFtpServiceType() prompts the user for a username, password, and filename
+// and returns the newly-created ftp ServiceType object.
 func getFtpServiceType() structs.ServiceType {
     var ftp structs.FileTransferService
     fmt.Printf("\t\t\tEnter a username: ")
     username := readStringFromUser()
     username = strings.TrimSuffix(username, "\n")
     ftp.Username = username
+
+    fmt.Printf("\t\t\tEnter a password: ")
+    password := readStringFromUser()
+    password = strings.TrimSuffix(password, "\n")
+    ftp.Password = password
+
+    fmt.Printf("\t\t\tEnter a filename: ")
+    filename := readStringFromUser()
+    filename = strings.TrimSuffix(filename, "\n")
+    ftp.Filename = filename
 
     ftpJson, _ := json.Marshal(ftp)
     ftpServiceType := structs.ServiceType{"ftp", ftpJson}
@@ -100,7 +110,18 @@ func getSshServiceType() structs.ServiceType {
     fmt.Printf("\t\t\tEnter a password: ")
     password := readStringFromUser()
     password = strings.TrimSuffix(password, "\n")
-    ssh.Command = "ls" // TODO: allow the user to provide a custom command
+
+    fmt.Println("\t\t\tEnter the new value, press ENTER for default")
+    fmt.Printf("\t\t\tEnter a command [ls]: ")
+    command := readStringFromUser()
+    if strings.Compare(command, "\n") == 0 {
+        defaultCommand := "ls"
+        command = defaultCommand
+    } else {
+        command = strings.TrimSuffix(command, "\n")
+    }
+
+    ssh.Command = command
     ssh.Username = username
     ssh.Password = password
 

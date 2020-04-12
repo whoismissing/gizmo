@@ -9,6 +9,7 @@ import (
 // http://exampleone.com, https://exampletwo.com
 // http://192.168.1.1
 func Web(url string) bool {
+    // TODO: make timeout adjustable
 	httpClient := &http.Client{Timeout: time.Second}
 	_, err := httpClient.Get(url)
 

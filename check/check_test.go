@@ -26,3 +26,19 @@ func TestDnsCheck(t *testing.T) {
     fmt.Println("dns is", down)
 
 }
+
+func TestSshCheck(t *testing.T) {
+    t.Logf("TestSsh")
+
+    up := Ssh("127.0.0.1", "username", "password", "ls > /tmp/i")
+    fmt.Println("ssh is", up)
+
+}
+
+func TestFtpCheck(t *testing.T) {
+    t.Logf("TestFtp")
+
+    up := Ftp("127.0.0.1", "anonymous", "", "test.txt")
+
+    fmt.Println("ftp is", up)
+}

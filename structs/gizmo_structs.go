@@ -93,6 +93,7 @@ type DomainNameService struct {
 type FileTransferService struct {
 	Username string
 	Password string
+    Filename string
 }
 
 // SecureShellService represents a ssh ServiceCheck and contains the username,
@@ -181,7 +182,7 @@ func (dns DomainNameService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 
 	ip := (*service).HostIP
 	record := dns.DomainName
-	fmt.Printf("[ DNS ] targetip=%s record=%s\n", ip, record)
+	fmt.Printf("[ DNS ] teamid=%d name=%s targetip=%s record=%s\n", service.TeamID, service.Name, ip, record)
 
 	status := check.Dns(ip, record)
 	updateCheckCount(service, status)
@@ -189,16 +190,14 @@ func (dns DomainNameService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 
 // ftp.CheckHealth() is the CheckHealth() method implemented by the FileTransferService
 // object that calls the corresponding ftp checking method from package check.
-// BUG(todo): The ftp filename that is checked is currently hard-coded.
 func (ftp FileTransferService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	ip := (*service).HostIP
 	user := ftp.Username
 	pass := ftp.Password
-	// TODO: obtain FTP filename from JSON config
-	filename := "hello.txt"
-	fmt.Printf("[ FTP ] targetip=%s filename=%s username=%s password=%s\n", ip, filename, user, pass)
+	filename := ftp.Filename
+	fmt.Printf("[ FTP ] teamid=%d name=%s targetip=%s filename=%s username=%s password=%s filename=%s\n", service.TeamID, service.Name, ip, filename, user, pass, filename)
 
 	status := check.Ftp(ip, user, pass, filename)
 	updateCheckCount(service, status)
@@ -212,9 +211,10 @@ func (ssh SecureShellService) CheckHealth(service *Service, wg *sync.WaitGroup) 
 	ip := (*service).HostIP
 	user := ssh.Username
 	pass := ssh.Password
-	fmt.Printf("[ SSH ] targetip=%s username=%s password=%s\n", ip, user, pass)
+    command := ssh.Command
+	fmt.Printf("[ SSH ] teamID=%d name=%s targetip=%s username=%s password=%s command=%s\n", service.TeamID, service.Name, ip, user, pass, command)
 
-	status := check.Ssh(ip, user, pass)
+	status := check.Ssh(ip, user, pass, command)
 	updateCheckCount(service, status)
 }
 
@@ -224,7 +224,7 @@ func (ping PingService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	ip := (*service).HostIP
-	fmt.Printf("[ ping ] targetip=%s\n", ip)
+	fmt.Printf("[ ping ] teamID=%d name=%s targetip=%s\n", service.TeamID, service.Name, ip)
 
 	status := check.Ping(ip)
 	updateCheckCount(service, status)
@@ -237,7 +237,7 @@ func (ext ExternalService) CheckHealth(service *Service, wg *sync.WaitGroup) {
 
     ip := (*service).HostIP
     filepath := ext.ScriptPath
-    fmt.Printf("[ EXT ] targetip=%s filepath=%s\n", ip, filepath)
+    fmt.Printf("[ EXT ] teamID=%d name=%s targetip=%s filepath=%s\n", service.TeamID, service.Name, ip, filepath)
 
     status := check.External(ip, filepath)
     updateCheckCount(service, status)
