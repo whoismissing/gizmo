@@ -1,7 +1,7 @@
 # gizmo
 Service checker and scoreboard for CCDC-like exercises.
 
-<img src="./gizmo.png" style="zoom: 25%;"/>
+<img src="./gizmo.png" style="max-width=50%; max-height=50%;" />
 
 Currently supports the following services in some fashion:
 * ftp
